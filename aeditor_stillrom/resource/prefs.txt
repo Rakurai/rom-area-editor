@@ -1,5 +1,0 @@
-4
-C:\Develop\animud\area\pond.are
-C:\Documents and Settings\Me\Desktop\AMD.are
-C:\Documents and Settings\Me\Desktop\sewers.are
-C:\Documents and Settings\Me\Desktop\tiru.are
