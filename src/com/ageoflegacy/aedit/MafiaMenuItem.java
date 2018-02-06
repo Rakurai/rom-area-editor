@@ -19,8 +19,8 @@ public class MafiaMenuItem extends JMenuItem {
 
 	public MafiaMenuItem(String name, int mnemonic, ImageIcon icon, ActionListener listener) {
 		super(name);
-        setMnemonic(mnemonic);
-        setIcon(icon);
-        addActionListener(listener);
+		setMnemonic(mnemonic);
+		setIcon(icon);
+		addActionListener(listener);
 	}
 }

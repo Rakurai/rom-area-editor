@@ -7,43 +7,42 @@ import javax.swing.*;
 
 public class SectorChooser extends JComboBox {
 
-    static final long serialVersionUID = 2342342341L;
-    
-    private final static String[] sectors =
-            {"Inside", "City", "Field", "Forest", "Hills", "Mountain",
-                    "Swim", "No swim", "Unused", "Air", "Desert", "Jungle",
-                    "Underwater", "Marsh", "Swamp", "Tundra", "Rainforest", "Cavern"};
+	static final long serialVersionUID = 2342342341L;
 
-    public static final int NUM_SECTORS = 18; // 18 sectors
+	private final static String[] sectors = { "Inside", "City", "Field", "Forest", "Hills", "Mountain", "Swim",
+			"No swim", "Unused", "Air", "Desert", "Jungle", "Underwater", "Marsh", "Swamp", "Tundra", "Rainforest",
+			"Cavern" };
 
-    public SectorChooser() {
-        super(sectors);
-        setMaximumRowCount(10);
-        setEditable(false);
-    }
+	public static final int NUM_SECTORS = 18; // 18 sectors
 
-    public String currentSector() {
-        String s = (String) getSelectedItem();
-        return s;
-    }
+	public SectorChooser() {
+		super(sectors);
+		setMaximumRowCount(10);
+		setEditable(false);
+	}
 
-    public int getSector() {
-        for (int a = 0; a < NUM_SECTORS; a++)
-            if (sectors[a].equals((String) getSelectedItem()))
-                return a;
+	public String currentSector() {
+		String s = (String) getSelectedItem();
+		return s;
+	}
 
-        return -1;
-    }
+	public int getSector() {
+		for (int a = 0; a < NUM_SECTORS; a++)
+			if (sectors[a].equals((String) getSelectedItem()))
+				return a;
 
-    public void setCurrentSector(String s) {
-        setSelectedItem(s);
-    }
+		return -1;
+	}
 
-    public void setCurrentSector(int s) {
-        if( s < 0 || s >= NUM_SECTORS ) {
-            System.out.println("Attempt to set bad sector: " + s);
-            return;
-        }
-        setSelectedItem(sectors[s]);
-    }
+	public void setCurrentSector(String s) {
+		setSelectedItem(s);
+	}
+
+	public void setCurrentSector(int s) {
+		if (s < 0 || s >= NUM_SECTORS) {
+			System.out.println("Attempt to set bad sector: " + s);
+			return;
+		}
+		setSelectedItem(sectors[s]);
+	}
 }

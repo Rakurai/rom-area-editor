@@ -8,80 +8,77 @@ import java.io.InputStreamReader;
 import java.util.Vector;
 
 public class LiquidTypeTable {
-    ClassLoader loader;
-    protected Vector liquidTypes;
-    boolean loaded;
-    protected FileInputStream inStream;
-    protected BufferedReader buf;
-    protected boolean open;
+	ClassLoader loader;
+	protected Vector liquidTypes;
+	boolean loaded;
+	protected FileInputStream inStream;
+	protected BufferedReader buf;
+	protected boolean open;
 
-    public LiquidTypeTable() {
-        loaded = false;
-        loader = ClassLoader.getSystemClassLoader();
-    }
+	public LiquidTypeTable() {
+		loaded = false;
+		loader = ClassLoader.getSystemClassLoader();
+	}
 
-    public void loadLiquidTypeTable(String file) {
-        //File inputFile = new File(file);
-        open = false;
-        try {
-            //inStream = new FileInputStream( inputFile );
-            buf = new BufferedReader(new InputStreamReader(loader.getResource(file).openStream()));
-            open = true;
-            liquidTypes = new Vector();
-            readTable();
+	public void loadLiquidTypeTable(String file) {
+		// File inputFile = new File(file);
+		open = false;
+		try {
+			// inStream = new FileInputStream( inputFile );
+			buf = new BufferedReader(new InputStreamReader(loader.getResource(file).openStream()));
+			open = true;
+			liquidTypes = new Vector();
+			readTable();
 
-            loaded = true;
-        }
-        catch (FileNotFoundException e) {
-            System.out.println("Bad filename!");
-            open = false;
-            loaded = false;
-        }
-        catch (java.io.IOException ex) {
-            System.out.println("no liquid file!");
-            open = false;
-            loaded = false;
-        }
-    }
+			loaded = true;
+		} catch (FileNotFoundException e) {
+			System.out.println("Bad filename!");
+			open = false;
+			loaded = false;
+		} catch (java.io.IOException ex) {
+			System.out.println("no liquid file!");
+			open = false;
+			loaded = false;
+		}
+	}
 
-    private void readTable() {
-        String temp = getLine();
-        while (temp != null && !temp.startsWith("$")) {
-            liquidTypes.add(temp);
-            temp = getLine();
-        }
-    }
+	private void readTable() {
+		String temp = getLine();
+		while (temp != null && !temp.startsWith("$")) {
+			liquidTypes.add(temp);
+			temp = getLine();
+		}
+	}
 
-    private boolean isOpen() {
-        return open;
-    }
+	private boolean isOpen() {
+		return open;
+	}
 
-    private String getLine() {
-        if (open == false)
-            return null;
+	private String getLine() {
+		if (open == false)
+			return null;
 
-        try {
-            return buf.readLine();
-        }
-        catch (Exception e) {
-            System.out.println("Returning null from getLine()");
-            return null;
-        }
-    }
+		try {
+			return buf.readLine();
+		} catch (Exception e) {
+			System.out.println("Returning null from getLine()");
+			return null;
+		}
+	}
 
-    public boolean isLiquidType(String s) {
-        if (s == null)
-            return false;
+	public boolean isLiquidType(String s) {
+		if (s == null)
+			return false;
 
-        return liquidTypes.contains(s.toLowerCase());
-    }
+		return liquidTypes.contains(s.toLowerCase());
+	}
 
-    public String getDefaultLiquid() {
-        return (String) (liquidTypes.elementAt(0));
-    }
+	public String getDefaultLiquid() {
+		return (String) (liquidTypes.elementAt(0));
+	}
 
-    public JComboBox getLiquidTypeComboBox() {
-        return new JComboBox(liquidTypes);
-    }
+	public JComboBox getLiquidTypeComboBox() {
+		return new JComboBox(liquidTypes);
+	}
 
 }

@@ -11,95 +11,95 @@ package com.ageoflegacy.aedit.model;
 
 public class AreaHeader {
 
-    private String fileName;
-    private String pathName;
-    private String areaName;
-    private String builder;
-    private int lowVnum;
-    private int highVnum;
-    private int security;
-    private int flags;
+	private String fileName;
+	private String pathName;
+	private String areaName;
+	private String builder;
+	private int lowVnum;
+	private int highVnum;
+	private int security;
+	private int flags;
 
-    public AreaHeader() {
-        this.reset();
-    }
+	public AreaHeader() {
+		this.reset();
+	}
 
-    public void reset() {
-        lowVnum = 0;
-        highVnum = 0;
-        fileName = "newarea.are";
-        pathName = null;
-        areaName = "NewArea";
-        builder = "Mafia";
-        flags = 0;
-        security = 0;   
-    }
+	public void reset() {
+		lowVnum = 0;
+		highVnum = 0;
+		fileName = "newarea.are";
+		pathName = null;
+		areaName = "NewArea";
+		builder = "Mafia";
+		flags = 0;
+		security = 0;
+	}
 
-    public String getAreaName() {
-        return areaName;
-    }
+	public String getAreaName() {
+		return areaName;
+	}
 
-    public String getBuilder() {
-        return builder;
-    }
+	public String getBuilder() {
+		return builder;
+	}
 
-    public String getFileName() {
-        return fileName;
-    }
+	public String getFileName() {
+		return fileName;
+	}
 
-    public String getPathName() {
-        return pathName;
-    }
+	public String getPathName() {
+		return pathName;
+	}
 
-    public int getSecurity() {
-        return security;
-    }
+	public int getSecurity() {
+		return security;
+	}
 
-    public int getLowVnum() {
-        return lowVnum;
-    }
+	public int getLowVnum() {
+		return lowVnum;
+	}
 
-    public int getHighVnum() {
-        return highVnum;
-    }
+	public int getHighVnum() {
+		return highVnum;
+	}
 
-    public int getFlags() {
-        return flags;
-    }
+	public int getFlags() {
+		return flags;
+	}
 
-    public void setBuilder(String newbuilder) {
-        builder = newbuilder;
-    }
+	public void setBuilder(String newbuilder) {
+		builder = newbuilder;
+	}
 
-    public void setAreaName(String newname) {
-        areaName = newname;
-    }
+	public void setAreaName(String newname) {
+		areaName = newname;
+	}
 
-    public void setFileName(String newname) {
-        fileName = newname;
-    }
+	public void setFileName(String newname) {
+		fileName = newname;
+	}
 
-    public void setPathName(String newpath) {
-        pathName = newpath;
-    }
+	public void setPathName(String newpath) {
+		pathName = newpath;
+	}
 
-    public void setVnumRange(int newLowVnum, int newHighVnum) {
-        if (newHighVnum < newLowVnum) {
-            setVnumRange(newHighVnum, newLowVnum);
-            return;
-        }
+	public void setVnumRange(int newLowVnum, int newHighVnum) {
+		if (newHighVnum < newLowVnum) {
+			setVnumRange(newHighVnum, newLowVnum);
+			return;
+		}
 
-        lowVnum = newLowVnum;
-        highVnum = newHighVnum;
-    }
+		lowVnum = newLowVnum;
+		highVnum = newHighVnum;
+	}
 
-    public void setSecurity(int newSecurity) {
-        if (newSecurity >= 1 && newSecurity <= 9) {
-            security = newSecurity;
-        }
-    }
+	public void setSecurity(int newSecurity) {
+		if (newSecurity >= 1 && newSecurity <= 9) {
+			security = newSecurity;
+		}
+	}
 
-    public void setFlags(int newFlags) {
-        flags = newFlags;
-    }
+	public void setFlags(int newFlags) {
+		flags = newFlags;
+	}
 }

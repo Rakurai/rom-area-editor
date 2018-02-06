@@ -17,25 +17,24 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class LabeledField extends JPanel {
-    
-    public LabeledField(String label, Component field) {
-        setLayout(new MigLayout());
-        add(new JLabel(label + ": "));
-        add(field);
-    }
 
-    public LabeledField(String label, Component field, boolean wrapBeforeLabel) {
-        setLayout(new MigLayout());
-        
-        if( wrapBeforeLabel == true ) {
-            add(new JLabel(label + ": "), "wrap");
-            
-        } else {
-            add(new JLabel(label + ": "));
-            
-        }
-        add(field);
-    }
+	public LabeledField(String label, Component field) {
+		setLayout(new MigLayout());
+		add(new JLabel(label + ": "));
+		add(field);
+	}
+
+	public LabeledField(String label, Component field, boolean wrapBeforeLabel) {
+		setLayout(new MigLayout());
+
+		if (wrapBeforeLabel == true) {
+			add(new JLabel(label + ": "), "wrap");
+
+		} else {
+			add(new JLabel(label + ": "));
+
+		}
+		add(field);
+	}
 
 }
- 

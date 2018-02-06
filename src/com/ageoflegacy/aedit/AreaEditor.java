@@ -9,8 +9,8 @@
 package com.ageoflegacy.aedit;
 
 public class AreaEditor {
-    // Main function
-    public static void main(String[] args) {    	
-        AreaEditorFrame ed = new AreaEditorFrame("Animud/Rom/Cynthe Area Editor");
-    }
+	// Main function
+	public static void main(String[] args) {
+		AreaEditorFrame ed = new AreaEditorFrame("Animud/Rom/Cynthe Area Editor");
+	}
 }
