@@ -92,10 +92,10 @@ public class RomWriter extends RomIO {
 		romWrite("Name " + theArea.getAreaName() + "~\n");
 		romWrite("Builders " + theArea.getBuilder() + "~\n");
 		romWrite("VNUMs " + low + " " + high + "\n");
-		romWrite("Credits [" + nf.format(theArea.getLowLevel()) + "  " + nf.format(theArea.getHighLevel()) + "] "
+		romWrite("Range " + theArea.getRangeString() + "~\n");
+/*		romWrite("Credits [" + nf.format(theArea.getLowLevel()) + "  " + nf.format(theArea.getHighLevel()) + "] "
 				+ theArea.getBuilder() + " " + theArea.getAreaName() + "~\n");
-		romWrite("Security " + theArea.getSecurity() + "\n");
-		if (theArea.getFlags() != 0) {
+*/		if (theArea.getFlags() != 0) {
 			romWrite("Flags " + flags + "\n");
 		}
 		romWrite("End\n\n\n\n");

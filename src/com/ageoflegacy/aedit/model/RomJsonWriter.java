@@ -75,14 +75,17 @@ public class RomJsonWriter extends RomIO {
 		String low = Integer.toString(theArea.getLowVnum());
 		String high = Integer.toString(theArea.getHighVnum());
 		String flags = Integer.toString(theArea.getFlags());
-		NumberFormat nf = new DecimalFormat("000");
+//		NumberFormat nf = new DecimalFormat("000");
 
-		JsonObjectBuilder builder = Json.createObjectBuilder().add("name", theArea.getAreaName())
-				.add("builders", theArea.getBuilder()).add("vnums", low + " " + high)
-				.add("credits",
+		JsonObjectBuilder builder = Json.createObjectBuilder()
+				.add("name", theArea.getAreaName())
+				.add("builders", theArea.getBuilder())
+				.add("vnums", low + " " + high)
+				.add("range", theArea.getRangeString());
+/*				.add("credits",
 						"[" + nf.format(theArea.getLowLevel()) + "  " + nf.format(theArea.getHighLevel()) + "] "
-								+ theArea.getBuilder() + " " + theArea.getAreaName())
-				.add("security", theArea.getSecurity());
+								+ theArea.getBuilder() + " " + theArea.getAreaName());
+*/
 		if (theArea.getFlags() != 0) {
 			builder.add("flags", flags);
 		}

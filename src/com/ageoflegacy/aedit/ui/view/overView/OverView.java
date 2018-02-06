@@ -14,6 +14,7 @@ import com.ageoflegacy.aedit.ui.view.EditorView;
 import com.ageoflegacy.aedit.ui.FlagChoice;
 import com.ageoflegacy.aedit.ui.JMudNumberField;
 import com.ageoflegacy.aedit.ui.JMudTextField;
+import com.ageoflegacy.aedit.ui.LabeledField;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -21,14 +22,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
-import javax.swing.border.TitledBorder;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import com.ageoflegacy.aedit.ui.view.roomView.LabeledField;
 import net.miginfocom.swing.MigLayout;
 import net.miginfocom.layout.CC;
 
@@ -37,10 +36,23 @@ public class OverView extends EditorView implements ActionListener {
 	private JPanel fieldPanels[];
 	private FlagChoice areaFlagChoice;
 	protected JButton edit, revnum;
-	private String[] fieldTitles = { "File Name", "Area Name", "Builder", "Security", "Low Vnum", "High Vnum",
+	private String[] fieldTitles = { "File Name", "Area Name", "Builder", "Low Vnum", "High Vnum",
 			"Resets in Area", "Exits Out of Area", "Rooms in Area", "Mobs in Area", "Objects in Area",
 			"Object:Mobile:Room Ratio" };
 
+	enum field_types {
+		FILE_NAME,
+		AREA_NAME,
+		BUILDER,
+		VNUM_LOW,
+		VNUM_HIGH,
+		NUM_RESETS,
+		NUM_EXITS_OUT,
+		NUM_ROOMS,
+		NUM_MOBS,
+		NUM_OBJECTS,
+	}
+	
 	public OverView(Area ar) {
 		super(ar);
 		this.setLayout(new MigLayout("fillx"));
@@ -54,10 +66,10 @@ public class OverView extends EditorView implements ActionListener {
 		overviewPanel.add(edit);
 		overviewPanel.add(revnum, "wrap");
 
-		fields = new JTextField[12];
-		fieldPanels = new JPanel[12];
+		fields = new JTextField[field_types.values().length];
+		fieldPanels = new JPanel[field_types.values().length];
 
-		for (int a = 0; a < 12; a++) {
+		for (int a = 0; a < field_types.values().length; a++) {
 			fields[a] = new JTextField(20);
 			fields[a].setEditable(false);
 			fieldPanels[a] = new LabeledField(fieldTitles[a], fields[a], true);
@@ -87,18 +99,16 @@ public class OverView extends EditorView implements ActionListener {
 
 	// update the display from the data
 	public void update() {
-		fields[0].setText(data.getFileName());
-		fields[1].setText(data.getAreaName());
-		fields[2].setText(data.getBuilder());
-		fields[3].setText(Integer.toString(data.getSecurity()));
-		fields[4].setText(Integer.toString(data.getLowVnum()));
-		fields[5].setText(Integer.toString(data.getHighVnum()));
-		fields[6].setText(Integer.toString(data.getResetCount()));
-		fields[7].setText(data.getExitFromAreaCount());
-		fields[8].setText(Integer.toString(data.getRoomCount()));
-		fields[9].setText(Integer.toString(data.getMobCount()));
-		fields[10].setText(Integer.toString(data.getObjectCount()));
-		fields[11].setText(data.getRatio());
+		fields[field_types.FILE_NAME.ordinal()].setText(data.getFileName());
+		fields[field_types.AREA_NAME.ordinal()].setText(data.getAreaName());
+		fields[field_types.BUILDER.ordinal()].setText(data.getBuilder());
+		fields[field_types.VNUM_LOW.ordinal()].setText(Integer.toString(data.getLowVnum()));
+		fields[field_types.VNUM_HIGH.ordinal()].setText(Integer.toString(data.getHighVnum()));
+		fields[field_types.NUM_RESETS.ordinal()].setText(Integer.toString(data.getResetCount()));
+		fields[field_types.NUM_EXITS_OUT.ordinal()].setText(data.getExitFromAreaCount());
+		fields[field_types.NUM_ROOMS.ordinal()].setText(Integer.toString(data.getRoomCount()));
+		fields[field_types.NUM_MOBS.ordinal()].setText(Integer.toString(data.getMobCount()));
+		fields[field_types.NUM_OBJECTS.ordinal()].setText(Integer.toString(data.getObjectCount()));
 		areaFlagChoice.setFlags(data.getFlags());
 		if (data.valid()) {
 			edit.setEnabled(true);
@@ -126,38 +136,33 @@ public class OverView extends EditorView implements ActionListener {
 	public boolean checkBasicData(JTextField[] fields) {
 		int errornum = -1;
 		int c = 0, d = 0, lowv = 0, highv = 0;
-		if (fields[0].getText().length() != 0
-				&& (fields[0].getText().length() < 7 || !(fields[0].getText().endsWith(".are")))) {
+		if (fields[field_types.FILE_NAME.ordinal()].getText().length() != 0
+		 && (fields[field_types.FILE_NAME.ordinal()].getText().length() < 7
+		  || !(fields[field_types.FILE_NAME.ordinal()].getText().endsWith(".are")))) {
 			JOptionPane.showMessageDialog(null, "File name must be in the form XXX.are!!", "Couldn't Create New Area!",
 					JOptionPane.ERROR_MESSAGE);
 			System.out.println("Couldn't create new!(b)");
 			return false;
 		}
-		if (fields[1].getText().length() != 0 && fields[1].getText().length() < 6) {
+		if (fields[field_types.AREA_NAME.ordinal()].getText().length() != 0
+		 && fields[field_types.AREA_NAME.ordinal()].getText().length() < 6) {
 			JOptionPane.showMessageDialog(null, "Area name must be 6 characters or more!", "Couldn't Create New Area!",
 					JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
-		if (fields[2].getText().length() != 0 && fields[2].getText().length() < 4) {
+		if (fields[field_types.BUILDER.ordinal()].getText().length() != 0
+		 && fields[field_types.BUILDER.ordinal()].getText().length() < 4) {
 			JOptionPane.showMessageDialog(null, "Builder name must be 4 characters or more!",
 					"Couldn't Create New Area!", JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
 		try {
-			if (fields[3].getText().length() != 0) {
-				errornum = 1;
-				c = Integer.parseInt(fields[3].getText());
-				if (c < 1 || c > 9) {
-					JOptionPane.showMessageDialog(null, "Security must be a # from 1 to 9.",
-							"Couldn't Create New Area!", JOptionPane.ERROR_MESSAGE);
-					return false;
-				}
-			}
-			if (fields[4].getText().length() != 0 && fields[5].getText().length() != 0) {
+			if (fields[field_types.VNUM_LOW.ordinal()].getText().length() != 0
+			 && fields[field_types.VNUM_HIGH.ordinal()].getText().length() != 0) {
 				errornum = 2;
-				lowv = Integer.parseInt(fields[4].getText());
+				lowv = Integer.parseInt(fields[field_types.VNUM_LOW.ordinal()].getText());
 				errornum = 3;
-				highv = Integer.parseInt(fields[5].getText());
+				highv = Integer.parseInt(fields[field_types.VNUM_HIGH.ordinal()].getText());
 				if (lowv + 24 >= highv) {
 					JOptionPane.showMessageDialog(null, "High vnum must be GREATER than low vnum by at least 25!!",
 							"Couldn't Create New Area!", JOptionPane.ERROR_MESSAGE);
@@ -178,10 +183,6 @@ public class OverView extends EditorView implements ActionListener {
 			}
 		} catch (Exception exc) {
 			switch (errornum) {
-			case 1:
-				JOptionPane.showMessageDialog(null, "Security must be a NUMBER from 1 to 9.",
-						"Couldn't Create New Area!", JOptionPane.ERROR_MESSAGE);
-				break;
 			case 2:
 				JOptionPane.showMessageDialog(null, "Low vnum must be a NUMBER!!", "Couldn't Create New Area!",
 						JOptionPane.ERROR_MESSAGE);
@@ -298,16 +299,16 @@ public class OverView extends EditorView implements ActionListener {
 		GridBagConstraints constraint;
 		GridBagLayout layout;
 		JPanel temp;
+		private final int NUM_FIELDS = 5;
 
 		public dataUpdate() {
-			labels = new JLabel[6];
-			fields = new JTextField[6];
-			for (int a = 0; a < 3; a++) {
-				fields[a] = new JMudTextField(20);
-			}
-			fields[3] = new JMudNumberField(20);
-			fields[4] = new JTextField(20);
-			fields[5] = new JMudNumberField(20);
+			labels = new JLabel[NUM_FIELDS];
+			fields = new JTextField[NUM_FIELDS];
+			fields[field_types.FILE_NAME.ordinal()] = new JMudTextField(20);
+			fields[field_types.AREA_NAME.ordinal()] = new JMudTextField(20);
+			fields[field_types.BUILDER.ordinal()] = new JMudTextField(20);
+			fields[field_types.VNUM_LOW.ordinal()] = new JTextField(20);
+			fields[field_types.VNUM_HIGH.ordinal()] = new JMudNumberField(20);
 			temp = new JPanel();
 			layout = new GridBagLayout();
 			constraint = new GridBagConstraints();
@@ -324,13 +325,12 @@ public class OverView extends EditorView implements ActionListener {
 			temp.add(l1);
 			constraint.gridwidth = 1;
 			constraint.gridheight = 1;
-			labels[0] = new JLabel("File Name : ", JLabel.RIGHT);
-			labels[1] = new JLabel("Area Name :", JLabel.RIGHT);
-			labels[2] = new JLabel("Builder   :", JLabel.RIGHT);
-			labels[3] = new JLabel("Security  :", JLabel.RIGHT);
-			labels[4] = new JLabel("Lower Vnum:", JLabel.RIGHT);
-			labels[5] = new JLabel("High Vnum :", JLabel.RIGHT);
-			for (int a = 0; a < 6; a++) {
+			labels[field_types.FILE_NAME.ordinal()] = new JLabel("File Name : ", JLabel.RIGHT);
+			labels[field_types.AREA_NAME.ordinal()] = new JLabel("Area Name :", JLabel.RIGHT);
+			labels[field_types.BUILDER.ordinal()] = new JLabel("Builder   :", JLabel.RIGHT);
+			labels[field_types.VNUM_LOW.ordinal()] = new JLabel("Lower Vnum:", JLabel.RIGHT);
+			labels[field_types.VNUM_HIGH.ordinal()] = new JLabel("High Vnum :", JLabel.RIGHT);
+			for (int a = 0; a < NUM_FIELDS; a++) {
 				constraint.gridx = 0;
 				constraint.gridy = a + 3;
 				layout.setConstraints(labels[a], constraint);
@@ -339,14 +339,13 @@ public class OverView extends EditorView implements ActionListener {
 				layout.setConstraints(fields[a], constraint);
 				temp.add(fields[a]);
 			}
-			fields[0].setText(data.getFileName());
-			fields[1].setText(data.getAreaName());
-			fields[2].setText(data.getBuilder());
-			fields[3].setText(Integer.toString(data.getSecurity()));
-			fields[4].setEnabled(false);
-			fields[4].setText("Use REVNUM to change starting vnum.");
-			fields[5].setText(Integer.toString(data.getHighVnum()));
-			fields[4].setEnabled(false);
+			fields[field_types.FILE_NAME.ordinal()].setText(data.getFileName());
+			fields[field_types.AREA_NAME.ordinal()].setText(data.getAreaName());
+			fields[field_types.BUILDER.ordinal()].setText(data.getBuilder());
+			fields[field_types.VNUM_LOW.ordinal()].setEnabled(false);
+			fields[field_types.VNUM_LOW.ordinal()].setText("Use REVNUM to change starting vnum.");
+			fields[field_types.VNUM_HIGH.ordinal()].setText(Integer.toString(data.getHighVnum()));
+			fields[field_types.VNUM_HIGH.ordinal()].setEnabled(false);
 		}
 
 		public void actionPerformed(ActionEvent e) {
@@ -354,19 +353,18 @@ public class OverView extends EditorView implements ActionListener {
 			int errornum = -1;
 			Object[] options = { "OK", "CANCEL" };
 
-			fields[0].setText(data.getFileName());
-			fields[1].setText(data.getAreaName());
-			fields[2].setText(data.getBuilder());
-			fields[3].setText(Integer.toString(data.getSecurity()));
-			fields[4].setText("Use REVNUM to change starting vnum.");
-			fields[5].setText(Integer.toString(data.getHighVnum()));
+			fields[field_types.FILE_NAME.ordinal()].setText(data.getFileName());
+			fields[field_types.AREA_NAME.ordinal()].setText(data.getAreaName());
+			fields[field_types.BUILDER.ordinal()].setText(data.getBuilder());
+			fields[field_types.VNUM_LOW.ordinal()].setText("Use REVNUM to change starting vnum.");
+			fields[field_types.VNUM_HIGH.ordinal()].setText(Integer.toString(data.getHighVnum()));
 			do {
 				errornum = -1;
 				choice = JOptionPane.showOptionDialog(null, temp, "Basic Area Data", JOptionPane.DEFAULT_OPTION,
 						JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
-				fields[4].setText(Integer.toString(data.getLowVnum()));
+				fields[field_types.VNUM_LOW.ordinal()].setText(Integer.toString(data.getLowVnum()));
 				if (choice == 0) {
-					for (int a = 0; a < 6; a++) {
+					for (int a = 0; a < NUM_FIELDS; a++) {
 						if (fields[a].getText().equals("")) {
 							JOptionPane.showMessageDialog(null, "-All- fields must be entered!",
 									"All fields mus be entered!", JOptionPane.ERROR_MESSAGE);
@@ -378,11 +376,12 @@ public class OverView extends EditorView implements ActionListener {
 					return;
 			} while (choice == 0 && (errornum == 1 || checkBasicData(fields) == false));
 
-			data.setFileName(fields[0].getText());
-			data.setAreaName(fields[1].getText());
-			data.setBuilder(fields[2].getText());
-			data.setSecurity(Integer.parseInt(fields[3].getText()));
-			data.setVnumRange(Integer.parseInt(fields[4].getText()), Integer.parseInt(fields[5].getText()));
+			data.setFileName(fields[field_types.FILE_NAME.ordinal()].getText());
+			data.setAreaName(fields[field_types.AREA_NAME.ordinal()].getText());
+			data.setBuilder(fields[field_types.BUILDER.ordinal()].getText());
+			data.setVnumRange(
+				Integer.parseInt(fields[field_types.VNUM_LOW.ordinal()].getText()),
+				Integer.parseInt(fields[field_types.VNUM_HIGH.ordinal()].getText()));
 			update();
 
 		}

@@ -2,6 +2,7 @@ package com.ageoflegacy.aedit.model;
 
 import com.ageoflegacy.aedit.model.MobileProgram;
 
+import javax.json.JsonValue;
 import javax.swing.*;
 import java.util.Vector;
 import com.ageoflegacy.aedit.ui.view.mobView.MudShopView;
@@ -54,16 +55,16 @@ public class Area {
 		return getHeader().getBuilder();
 	}
 
+	public String getRangeString() {
+		return getHeader().getRangeString();
+	}
+
 	public String getFileName() {
 		return getHeader().getFileName();
 	}
 
 	public String getPathName() {
 		return getHeader().getPathName();
-	}
-
-	public int getSecurity() {
-		return getHeader().getSecurity();
 	}
 
 	public int getLowVnum() {
@@ -374,6 +375,10 @@ public class Area {
 		getHeader().setAreaName(newname);
 	}
 
+	public void setRangeString(String str) {
+		getHeader().setRangeString(str);
+	}
+
 	public void setFileName(String newname) {
 		getHeader().setFileName(newname);
 	}
@@ -385,10 +390,6 @@ public class Area {
 	public void setVnumRange(int newLowVnum, int newHighVnum) {
 		getHeader().setVnumRange(newLowVnum, newHighVnum);
 		validArea = true;
-	}
-
-	public void setSecurity(int newSecurity) {
-		getHeader().setSecurity(newSecurity);
 	}
 
 	public void setFlags(int newFlags) {

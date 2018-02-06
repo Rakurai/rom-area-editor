@@ -4,17 +4,12 @@
  * Area Editor Project, Spring 2002
  * 12/19/2015
  */
-package com.ageoflegacy.aedit.ui.view.roomView;
+package com.ageoflegacy.aedit.ui;
 
-import com.ageoflegacy.aedit.model.MudConstants;
-import com.ageoflegacy.aedit.model.*;
-import com.ageoflegacy.aedit.ui.*;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.awt.event.*;
 
 public class LabeledField extends JPanel {
 

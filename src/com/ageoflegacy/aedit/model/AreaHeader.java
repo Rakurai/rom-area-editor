@@ -15,9 +15,9 @@ public class AreaHeader {
 	private String pathName;
 	private String areaName;
 	private String builder;
+	private String rangeString;
 	private int lowVnum;
 	private int highVnum;
-	private int security;
 	private int flags;
 
 	public AreaHeader() {
@@ -32,7 +32,6 @@ public class AreaHeader {
 		areaName = "NewArea";
 		builder = "Mafia";
 		flags = 0;
-		security = 0;
 	}
 
 	public String getAreaName() {
@@ -50,9 +49,9 @@ public class AreaHeader {
 	public String getPathName() {
 		return pathName;
 	}
-
-	public int getSecurity() {
-		return security;
+	
+	public String getRangeString() {
+		return rangeString;
 	}
 
 	public int getLowVnum() {
@@ -93,13 +92,11 @@ public class AreaHeader {
 		highVnum = newHighVnum;
 	}
 
-	public void setSecurity(int newSecurity) {
-		if (newSecurity >= 1 && newSecurity <= 9) {
-			security = newSecurity;
-		}
-	}
-
 	public void setFlags(int newFlags) {
 		flags = newFlags;
+	}
+
+	public void setRangeString(String str) {
+		rangeString = str;
 	}
 }

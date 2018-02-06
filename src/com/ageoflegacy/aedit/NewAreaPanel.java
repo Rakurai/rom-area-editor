@@ -21,18 +21,27 @@ import java.awt.event.*;
 
 public class NewAreaPanel extends JPanel {
 	JLabel[] labels;
+	private final int NUM_FIELDS = 5;
 	JTextField[] fields;
 	private GridBagConstraints constraint;
 	private GridBagLayout layout;
 	private AreaHeader header;
-	private String[] labelStrings = { "File Name", "Area Name", "Builder", "Security", "Lower Vnum", "High Vnum" };
+	private String[] labelStrings = { "File Name", "Area Name", "Builder", "Lower Vnum", "High Vnum" };
 
+	private enum field_types {
+			FILE_NAME,
+			AREA_NAME,
+			BUILDER,
+			VNUM_LOWER,
+			VNUM_UPPER
+	}
+	
 	public NewAreaPanel() {
 		super();
 		header = new AreaHeader();
-		labels = new JLabel[6];
-		fields = new JTextField[6];
-		for (int a = 0; a < 6; a++) {
+		labels = new JLabel[field_types.values().length];
+		fields = new JTextField[field_types.values().length];
+		for (int a = 0; a < field_types.values().length; a++) {
 			fields[a] = new JTextField(20);
 		}
 
@@ -59,7 +68,7 @@ public class NewAreaPanel extends JPanel {
 		add(l3);
 		constraint.gridwidth = 1;
 		constraint.gridheight = 1;
-		for (int a = 0; a < 6; a++) {
+		for (int a = 0; a < field_types.values().length; a++) {
 			labels[a] = new JLabel(labelStrings[a] + ": ", JLabel.RIGHT);
 			constraint.gridx = 0;
 			constraint.gridy = a + 3;
@@ -81,7 +90,7 @@ public class NewAreaPanel extends JPanel {
 					JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
 			if (choice == 0) {
 				// for now, simple check...
-				for (int a = 0; a < 6; a++) {
+				for (int a = 0; a < field_types.values().length; a++) {
 					if (fields[a].getText().equals("")) {
 						JOptionPane.showMessageDialog(null, "-All- fields must be entered!",
 								"Couldn't Create New Area!", JOptionPane.ERROR_MESSAGE);
@@ -97,11 +106,12 @@ public class NewAreaPanel extends JPanel {
 			}
 		} while ((errornum == 1 || !checkBasicData(fields)));
 
-		header.setFileName(fields[0].getText());
-		header.setAreaName(fields[1].getText());
-		header.setBuilder(fields[2].getText());
-		header.setSecurity(Integer.parseInt(fields[3].getText()));
-		header.setVnumRange(Integer.parseInt(fields[4].getText()), Integer.parseInt(fields[5].getText()));
+		header.setFileName(fields[field_types.FILE_NAME.ordinal()].getText());
+		header.setAreaName(fields[field_types.AREA_NAME.ordinal()].getText());
+		header.setBuilder(fields[field_types.BUILDER.ordinal()].getText());
+		header.setVnumRange(
+				Integer.parseInt(fields[field_types.VNUM_LOWER.ordinal()].getText()),
+				Integer.parseInt(fields[field_types.VNUM_UPPER.ordinal()].getText()));
 		return header;
 	}
 
@@ -110,28 +120,25 @@ public class NewAreaPanel extends JPanel {
 		int c = 0, d = 0, lowv = 0, highv = 0;
 		String error = null;
 		if (fields[0].getText().length() != 0
-				&& (fields[0].getText().length() < 7 || !(fields[0].getText().endsWith(".are")))) {
+				&& (fields[field_types.FILE_NAME.ordinal()].getText().length() < 7
+				 || !(fields[field_types.FILE_NAME.ordinal()].getText().endsWith(".are")))) {
 			error = "File name must be in the form XXX.are!!";
 		}
-		if (fields[1].getText().length() != 0 && fields[1].getText().length() < 6) {
+		if (fields[field_types.AREA_NAME.ordinal()].getText().length() != 0
+		 && fields[field_types.AREA_NAME.ordinal()].getText().length() < 6) {
 			error = "Area name must be 6 characters or more!";
 		}
-		if (fields[2].getText().length() != 0 && fields[2].getText().length() < 4) {
+		if (fields[field_types.BUILDER.ordinal()].getText().length() != 0
+		 && fields[field_types.BUILDER.ordinal()].getText().length() < 4) {
 			error = "Builder name must be 4 characters or more!";
 		}
 		try {
-			if (fields[3].getText().length() != 0) {
-				errornum = 1;
-				c = Integer.parseInt(fields[3].getText());
-				if (c < 1 || c > 9) {
-					error = "Security must be a # from 1 to 9.";
-				}
-			}
-			if (fields[4].getText().length() != 0 && fields[5].getText().length() != 0) {
+			if (fields[field_types.VNUM_LOWER.ordinal()].getText().length() != 0
+			 && fields[field_types.VNUM_UPPER.ordinal()].getText().length() != 0) {
 				errornum = 2;
-				lowv = Integer.parseInt(fields[4].getText());
+				lowv = Integer.parseInt(fields[field_types.VNUM_LOWER.ordinal()].getText());
 				errornum = 3;
-				highv = Integer.parseInt(fields[5].getText());
+				highv = Integer.parseInt(fields[field_types.VNUM_UPPER.ordinal()].getText());
 				if (lowv + 24 >= highv) {
 					error = "High vnum must be GREATER than low vnum by at least 25!!";
 				}
@@ -141,10 +148,6 @@ public class NewAreaPanel extends JPanel {
 			}
 		} catch (Exception exc) {
 			switch (errornum) {
-			case 1: {
-				error = "Security must be a NUMBER from 1 to 9.";
-				break;
-			}
 			case 2: {
 				error = "Low vnum must be a NUMBER!!";
 				break;
