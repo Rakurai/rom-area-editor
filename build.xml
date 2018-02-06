@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="Mafia" default="main build" basedir=".">
+<project name="AEdit" default="main build" basedir=".">
 
     <property name="src" value="src"/>
     <property name="lib" value="lib"/>
     <property name="data" value="data"/>
     <property name="image" value="image"/>
     <property name="build" value="build"/>
-    <property name="jarfile" value="mafia.jar"/>
+    <property name="jarfile" value="aedit.jar"/>
 
     <taskdef name="one-jar" classname="com.simontuffs.onejar.ant.OneJarTask"
              classpath="${lib}/one-jar-ant-task-0.96.jar" onerror="report"/>
@@ -39,7 +39,7 @@
     </target>
 
     <target name="jar" depends="compile">
-        <one-jar destfile="${jarfile}" manifest="mafia.mf" >
+        <one-jar destfile="${jarfile}" manifest="aedit.mf" >
             <main>
                 <!-- Construct main.jar from classes and source code -->
                 <fileset dir="${build}">
