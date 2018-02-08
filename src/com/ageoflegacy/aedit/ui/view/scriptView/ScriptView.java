@@ -1,9 +1,10 @@
 package com.ageoflegacy.aedit.ui.view.scriptView;
 
 import com.ageoflegacy.aedit.ui.view.EditorView;
-import com.ageoflegacy.aedit.model.Area;
+import com.ageoflegacy.aedit.model.Model;
 import com.ageoflegacy.aedit.model.Room;
-import com.ageoflegacy.aedit.model.MobileProgram;
+import com.ageoflegacy.aedit.model.area.Area;
+import com.ageoflegacy.aedit.model.area.MobileProgram;
 import com.ageoflegacy.aedit.beans.scanning.SyntaxHighlighter;
 import com.ageoflegacy.aedit.beans.scanning.Scanner;
 import com.ageoflegacy.aedit.beans.scanning.LuaScanner;
@@ -28,8 +29,8 @@ public class ScriptView extends EditorView {
 
 	SyntaxHighlighter text;
 
-	public ScriptView(Area d) {
-		super(d);
+	public ScriptView(Model m) {
+		super(m);
 
 		Scanner scanner = new LuaScanner();
 		text = new SyntaxHighlighter(24, 80, scanner);
@@ -48,13 +49,13 @@ public class ScriptView extends EditorView {
 		newButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// Get the lowest available room vnum
-				int vnum = data.getFreeScriptVnum();
+				int vnum = model.getArea().getFreeScriptVnum();
 				if (vnum == -1) {
 					inform("You are out of vnums!");
 					return;
 				}
 				MobileProgram temp = new MobileProgram(vnum);
-				data.insert(temp);
+				model.getArea().insert(temp);
 				update(vnum);
 			}
 		});
@@ -67,14 +68,14 @@ public class ScriptView extends EditorView {
 
 		backButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (vnum <= data.getFirstMprogVnum())
+				if (vnum <= model.getArea().getFirstMprogVnum())
 					return;
 
 				int temp = vnum - 1;
-				while (data.getScriptByVnum(temp) == null && temp >= data.getFirstMprogVnum())
+				while (model.getArea().getScriptByVnum(temp) == null && temp >= model.getArea().getFirstMprogVnum())
 					temp--;
 
-				if (temp >= data.getFirstMprogVnum())
+				if (temp >= model.getArea().getFirstMprogVnum())
 					vnum = temp;
 
 				update();
@@ -84,14 +85,14 @@ public class ScriptView extends EditorView {
 
 		nextButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (vnum >= data.getHighVnum())
+				if (vnum >= model.getArea().getHighVnum())
 					return;
 
 				int temp = vnum + 1;
-				while (data.getScriptByVnum(temp) == null && temp <= data.getHighVnum())
+				while (model.getArea().getScriptByVnum(temp) == null && temp <= model.getArea().getHighVnum())
 					temp++;
 
-				if (temp <= data.getHighVnum())
+				if (temp <= model.getArea().getHighVnum())
 					vnum = temp;
 
 				update();
@@ -114,7 +115,7 @@ public class ScriptView extends EditorView {
 	}
 
 	private void createNav() {
-		vnumBox = data.getVnumCombo("script");
+		vnumBox = model.getArea().getVnumCombo("script");
 		newButton = new JButton("New");
 		deleteButton = new JButton("Delete");
 		backButton = new JButton("Back");
@@ -133,11 +134,11 @@ public class ScriptView extends EditorView {
 	}
 
 	public void update() {
-		if (data.getMprogCount() > 0) {
-			if (vnum <= 0 || data.getScriptByVnum(vnum) == null) {
-				vnum = data.getFirstMprogVnum();
+		if (model.getArea().getMprogCount() > 0) {
+			if (vnum <= 0 || model.getArea().getScriptByVnum(vnum) == null) {
+				vnum = model.getArea().getFirstMprogVnum();
 			}
-			vnumBox.setSelectedItem(data.getScriptByVnum(vnum));
+			vnumBox.setSelectedItem(model.getArea().getScriptByVnum(vnum));
 			MobileProgram temp = (MobileProgram) vnumBox.getSelectedItem();
 			text.setText(temp.getProgram());
 		} else {

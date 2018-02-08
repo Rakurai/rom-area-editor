@@ -9,6 +9,9 @@
 package com.ageoflegacy.aedit.ui.view.roomView;
 
 import com.ageoflegacy.aedit.model.MudConstants;
+import com.ageoflegacy.aedit.model.area.Area;
+import com.ageoflegacy.aedit.model.area.MudExit;
+import com.ageoflegacy.aedit.model.area.MudObject;
 import com.ageoflegacy.aedit.model.*;
 import com.ageoflegacy.aedit.ui.*;
 import net.miginfocom.swing.MigLayout;
@@ -40,8 +43,8 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 	private JCheckBox keyLink;
 	static final long serialVersionUID = 23342342341L;
 
-	public RoomView(Area ar) {
-		super(ar);
+	public RoomView(Model m) {
+		super(m);
 		ClassLoader loader = ClassLoader.getSystemClassLoader();
 		Dimension mapHolderDimension = new Dimension(500, 600);
 
@@ -51,7 +54,7 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 		flagchoice = new FlagChoice("Room Flags", MudConstants.roomFlags, MudConstants.roomFlagData,
 				MudConstants.roomFlagCount, this, 6);
 
-		fields = new JTextField[4];
+		fields = new JTextField[5];
 		constraint.insets = new Insets(3, 3, 3, 3);
 
 		fields[1] = new JTextField(20);
@@ -62,6 +65,9 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 
 		fields[3] = new JMudNumberField(4);
 		JPanel manaPanel = new LabeledField("Mana Regen", fields[3]);
+		
+		fields[4] = new JMudNumberField(5);
+		JPanel telePanel = new LabeledField("Teleport", fields[4]);
 
 		sectorchoice = createSectorChooser();
 		JPanel sectorPanel = new LabeledField("Sector", sectorchoice);
@@ -75,9 +81,10 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 		fields[1].addFocusListener(new StringFieldFocusListener());
 		fields[2].addFocusListener(new StringFieldFocusListener());
 		fields[3].addFocusListener(new StringFieldFocusListener());
+		fields[4].addFocusListener(new StringFieldFocusListener());
 		desc.addFocusListener(new StringFieldFocusListener());
 
-		themap = new MapView(data, this);
+		themap = new MapView(model.getArea(), this);
 		JPanel mapHolder = new JPanel();
 		mapHolder.setLayout(new MigLayout());
 
@@ -104,7 +111,7 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 		mapHolder.add(mapPort, "span, growx, growy");
 		mapHolder.setPreferredSize(mapHolderDimension);
 
-		vnumBox = data.getVnumCombo("room");
+		vnumBox = model.getArea().getVnumCombo("room");
 		newRoomButton = new JButton("New");
 		deleteRoomButton = new JButton("Delete");
 		backRoomButton = new JButton("Back");
@@ -121,17 +128,17 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 		buttonPanel.add(extraDescButton);
 		buttonPanel.add(containerButton);
 
-		doorsRoomButton.addActionListener(new DoorListener(data));
+		doorsRoomButton.addActionListener(new DoorListener(model));
 		newRoomButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// Get the lowest available room vnum
-				int vnum = data.getFreeRoomVnum();
+				int vnum = model.getArea().getFreeRoomVnum();
 				if (vnum == -1) {
 					inform("You are out of vnums!");
 					return;
 				}
-				Room temp = new Room(vnum, data);
-				data.insert(temp);
+				Room temp = new Room(vnum, model.getArea());
+				model.getArea().insert(temp);
 				update(vnum);
 			}
 		});
@@ -144,14 +151,14 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 
 		backRoomButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (vnum <= data.getFirstRoomVnum())
+				if (vnum <= model.getArea().getFirstRoomVnum())
 					return;
 
 				int temp = vnum - 1;
-				while (data.getRoom(temp) == null && temp >= data.getFirstRoomVnum())
+				while (model.getArea().getRoom(temp) == null && temp >= model.getArea().getFirstRoomVnum())
 					temp--;
 
-				if (temp >= data.getFirstRoomVnum())
+				if (temp >= model.getArea().getFirstRoomVnum())
 					vnum = temp;
 
 				update();
@@ -161,14 +168,14 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 
 		nextRoomButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (vnum >= data.getHighVnum())
+				if (vnum >= model.getArea().getHighVnum())
 					return;
 
 				int temp = vnum + 1;
-				while (data.getRoom(temp) == null && temp <= data.getHighVnum())
+				while (model.getArea().getRoom(temp) == null && temp <= model.getArea().getHighVnum())
 					temp++;
 
-				if (temp <= data.getHighVnum())
+				if (temp <= model.getArea().getHighVnum())
 					vnum = temp;
 
 				update();
@@ -186,16 +193,17 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 			}
 		});
 
-		exitpanel = new ExitPanel(this, data);
+		exitpanel = new ExitPanel(this, model.getArea());
 
 		setLayout(new MigLayout());
 
 		JPanel leftPanel = new JPanel();
 		leftPanel.setLayout(new MigLayout());
 		leftPanel.add(sectorPanel);
+		leftPanel.add(telePanel);
 		leftPanel.add(hpPanel);
-		leftPanel.add(manaPanel);
-		leftPanel.add(namePanel, "wrap");
+		leftPanel.add(manaPanel, "wrap");
+		leftPanel.add(namePanel, "wrap,  span");
 		leftPanel.add(descPanel, "wrap,  span");
 		leftPanel.add(flagchoice, "wrap, span");
 		leftPanel.add(exitpanel, "wrap, growx, span");
@@ -216,7 +224,7 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 		chooser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (vnum != -1) {
-					Room temp = data.getRoom(vnum);
+					Room temp = model.getArea().getRoom(vnum);
 					temp.setSector(sectorchoice.getSector());
 				}
 				update();
@@ -229,10 +237,10 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 		JButton button = new JButton("Extra Descriptions");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ExtraDescPanel mp = new ExtraDescPanel(vnum, data);
+				ExtraDescPanel mp = new ExtraDescPanel(vnum, model.getArea());
 				int choice = -1;
 				int errornum = -1;
-				Room room = data.getRoom(vnum);
+				Room room = model.getArea().getRoom(vnum);
 				if (room == null)
 					return;
 
@@ -254,9 +262,9 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 		JButton button = new JButton("Resets");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				RoomInPanel mp = new RoomInPanel(vnum, data);
+				RoomInPanel mp = new RoomInPanel(vnum, model.getArea());
 				int errornum = -1;
-				Room room = data.getRoom(vnum);
+				Room room = model.getArea().getRoom(vnum);
 				if (room == null)
 					return;
 
@@ -279,21 +287,23 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 	}
 
 	public void update() {
-		if (data.getRoomCount() == 0) {
+		if (model.getArea().getRoomCount() == 0) {
 			fields[1].setText("No Room Loaded.");
 			desc.setText("No Room Loaded." + sectorchoice.currentSector());
 			fields[2].setText("100");
 			fields[3].setText("100");
+			fields[4].setText("0");
 			exitpanel.reset();
 			setEnabled(false);
 		} else {
-			if (vnum == -1 || vnum < data.getLowVnum() || vnum > data.getHighVnum())
-				vnum = data.getFirstRoomVnum();
-			Room temp = data.getRoom(vnum);
+			if (vnum == -1 || vnum < model.getArea().getLowVnum() || vnum > model.getArea().getHighVnum())
+				vnum = model.getArea().getFirstRoomVnum();
+			Room temp = model.getArea().getRoom(vnum);
 			fields[1].setText(temp.getName());
 			desc.setText(temp.getDescription());
 			fields[2].setText(Integer.toString(temp.getHeal())); // heal
 			fields[3].setText(Integer.toString(temp.getMana())); // mana
+			fields[4].setText(Integer.toString(temp.getTeleport())); // teleport
 			sectorchoice.setCurrentSector(temp.getSector());
 			flagchoice.setFlags(temp.getFlags());
 			exitpanel.setVnum(vnum);
@@ -305,13 +315,14 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 			barA.setValue(barA.getMaximum() / 3);
 			setEnabled(true);
 		}
-		vnumBox.setSelectedItem(data.getRoom(vnum));
+		vnumBox.setSelectedItem(model.getArea().getRoom(vnum));
 	}
 
 	public void setEnabled(boolean value) {
 		fields[1].setEnabled(value);
 		fields[2].setEnabled(value);
 		fields[3].setEnabled(value);
+		fields[4].setEnabled(value);
 		desc.setEnabled(value);
 		sectorchoice.setEnabled(value);
 		flagchoice.setEnabled(value);
@@ -331,7 +342,7 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 
 	public void deleteRoom() {
 		int uVnum = -1;
-		Room tRoom = data.getRoom(vnum);
+		Room tRoom = model.getArea().getRoom(vnum);
 
 		if (!confirm("Please confirm room deletion. All exits will be lost."))
 			return;
@@ -345,14 +356,14 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 		else if (tRoom.getEast() != null)
 			uVnum = tRoom.getEast().getVnum();
 
-		data.deleteRoom(vnum);
+		model.getArea().deleteRoom(vnum);
 		vnum = uVnum;
 		update();
 	}
 
 	public void moveView(int dir) {
 		Room temp;
-		temp = data.getRoom(vnum);
+		temp = model.getArea().getRoom(vnum);
 		MudExit texit;
 
 		if (temp == null) {
@@ -375,7 +386,7 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 			temp2.add(msg);
 
 			JRadioButton linkRadio = new JRadioButton("Link to ->");
-			JComboBox linkBox = data.getVnumCombo("rooms");
+			JComboBox linkBox = model.getArea().getVnumCombo("rooms");
 			JRadioButton digRadio = new JRadioButton("Dig a new room");
 			digRadio.setMnemonic(KeyEvent.VK_D);
 			linkRadio.setMnemonic(KeyEvent.VK_L);
@@ -416,8 +427,8 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 
 				// go through the rooms.
 				Room mRoom;
-				for (int a = data.getLowVnum(); a <= data.getHighVnum(); a++) {
-					mRoom = data.getRoom(a);
+				for (int a = model.getArea().getLowVnum(); a <= model.getArea().getHighVnum(); a++) {
+					mRoom = model.getArea().getRoom(a);
 					if (mRoom == null)
 						continue;
 					if (mRoom.getX() == myX && mRoom.getY() == myY) {
@@ -444,8 +455,8 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 				else if (dir == 3) // west
 					myX -= themap.getShortSize();
 
-				for (int a = data.getLowVnum(); a <= data.getHighVnum(); a++) {
-					mRoom = data.getRoom(a);
+				for (int a = model.getArea().getLowVnum(); a <= model.getArea().getHighVnum(); a++) {
+					mRoom = model.getArea().getRoom(a);
 					if (mRoom == null)
 						continue;
 
@@ -482,22 +493,22 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 					inform("Other side has exit, cannot link.");
 					return;
 				}
-				MudExit exit1 = new MudExit(t2.getVnum(), data.getRoom(vnum));
+				MudExit exit1 = new MudExit(t2.getVnum(), model.getArea().getRoom(vnum));
 				MudExit exit2 = new MudExit(vnum, t2);
-				data.getRoom(vnum).setExit(exit1, dir);
+				model.getArea().getRoom(vnum).setExit(exit1, dir);
 				t2.setExit(exit2, MudExit.getReverseExit(dir));
 				moveView(dir);
 			} else if (keyDig.isSelected() || digRadio.isSelected()) {
-				int newVnum = data.getFreeRoomVnum();
+				int newVnum = model.getArea().getFreeRoomVnum();
 				if (newVnum == -1) {
 					inform("You are out of vnums!");
 					return;
 				}
-				Room t2 = new Room(newVnum, data);
-				data.insert(t2);
-				MudExit exit1 = new MudExit(t2.getVnum(), data.getRoom(vnum));
+				Room t2 = new Room(newVnum, model.getArea());
+				model.getArea().insert(t2);
+				MudExit exit1 = new MudExit(t2.getVnum(), model.getArea().getRoom(vnum));
 				MudExit exit2 = new MudExit(vnum, t2);
-				data.getRoom(vnum).setExit(exit1, dir);
+				model.getArea().getRoom(vnum).setExit(exit1, dir);
 				t2.setExit(exit2, MudExit.getReverseExit(dir));
 				update();
 				moveView(dir);
@@ -511,16 +522,16 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 	}
 
 	public void digRoom(int dir) {
-		int newVnum = data.getFreeRoomVnum();
+		int newVnum = model.getArea().getFreeRoomVnum();
 		if (newVnum == -1) {
 			inform("You are out of vnums!");
 			return;
 		}
-		Room t2 = new Room(newVnum, data);
-		data.insert(t2);
-		MudExit exit1 = new MudExit(t2.getVnum(), data.getRoom(vnum));
+		Room t2 = new Room(newVnum, model.getArea());
+		model.getArea().insert(t2);
+		MudExit exit1 = new MudExit(t2.getVnum(), model.getArea().getRoom(vnum));
 		MudExit exit2 = new MudExit(vnum, t2);
-		data.getRoom(vnum).setExit(exit1, dir);
+		model.getArea().getRoom(vnum).setExit(exit1, dir);
 		t2.setExit(exit2, MudExit.getReverseExit(dir));
 		update();
 		moveView(dir);
@@ -565,7 +576,7 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		Room temp = data.getRoom(vnum);
+		Room temp = model.getArea().getRoom(vnum);
 		if (temp == null || flagchoice == null)
 			return;
 		temp.setFlags(flagchoice.getFlags());
@@ -589,7 +600,7 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 		}
 
 		public void focusLost(FocusEvent e) {
-			Room room = data.getRoom(vnum);
+			Room room = model.getArea().getRoom(vnum);
 
 			if (room == null)
 				return;
@@ -644,6 +655,13 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 							return;
 						else
 							room.setMana(newVal);
+					} else if (field == fields[4]) {
+						oldVal = room.getTeleport();
+	
+						if (newVal == oldVal)
+							return;
+						else
+							room.setTeleport(newVal);
 					} else
 						return;
 				} catch (Exception evt1) {
@@ -676,9 +694,9 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 		String nokey;
 		keySelectionListener ksListener;
 
-		public DoorListener(Area area) {
+		public DoorListener(Model m) {
 			super();
-			data = area;
+			model = m;
 			panel = new JPanel();
 			nokey = "No Key";
 			ksListener = new keySelectionListener();
@@ -733,7 +751,7 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 			exitFlags = new FlagChoice("Exit Flags", MudConstants.exitNames, MudConstants.exitFlags,
 					MudConstants.NUM_EXIT_FLAGS, new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
-							Room temp = data.getRoom(vnum);
+							Room temp = model.getArea().getRoom(vnum);
 							if (temp == null)
 								return;
 							MudExit exit = temp.getExit(selectedD());
@@ -742,7 +760,7 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 
 							exit.setFlags(exitFlags.getFlags());
 
-							Room temp2 = data.getRoom(exit.getToVnum());
+							Room temp2 = model.getArea().getRoom(exit.getToVnum());
 							MudExit exit2 = temp2.getExit(MudExit.getReverseExit(selectedD()));
 							if (exit2 == null)
 								return;
@@ -764,7 +782,7 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 		class keySelectionListener implements ActionListener {
 			public void actionPerformed(ActionEvent e) {
 				if (keySelection.getSelectedItem() instanceof String) {
-					Room temp = data.getRoom(vnum);
+					Room temp = model.getArea().getRoom(vnum);
 					if (temp == null)
 						return;
 					MudExit exit = temp.getExit(selectedD());
@@ -778,7 +796,7 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 				MudObject key = (MudObject) keySelection.getSelectedItem();
 				if (key == null)
 					return;
-				Room temp = data.getRoom(vnum);
+				Room temp = model.getArea().getRoom(vnum);
 				if (temp == null)
 					return;
 				MudExit exit = temp.getExit(selectedD());
@@ -803,7 +821,7 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 				return;
 
 			// set it up!
-			Room temp = data.getRoom(vnum);
+			Room temp = model.getArea().getRoom(vnum);
 			MudExit exit;
 			int selection = -1;
 			for (int a = 0; a < MudExit.MAX_EXITS; a++) {
@@ -830,11 +848,11 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 
 			keySelection.removeAllItems();
 			keys = false;
-			for (int loop = data.getLowVnum(); loop <= data.getHighVnum(); loop++) {
-				MudObject tempo = data.getObject(loop);
+			for (int loop = model.getArea().getLowVnum(); loop <= model.getArea().getHighVnum(); loop++) {
+				MudObject tempo = model.getArea().getObject(loop);
 				if (tempo == null)
 					continue;
-				if (tempo.getType() == MudConstants.ITEM_ROOM_KEY || tempo.getType() == MudConstants.ITEM_KEY) {
+				if (tempo.getType() == MudConstants.ITEM_KEY) {
 					keySelection.addItem(tempo);
 					keys = true;
 				}
@@ -851,8 +869,8 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 			exitFlags.setFlags(exit.getFlags());
 			keySelection.addItem(nokey);
 			keySelection.setSelectedItem(nokey);
-			if (data.getObject(exit.getKey()) != null)
-				keySelection.setSelectedItem(data.getObject(exit.getKey()));
+			if (model.getArea().getObject(exit.getKey()) != null)
+				keySelection.setSelectedItem(model.getArea().getObject(exit.getKey()));
 
 			keySelection.addActionListener(ksListener);
 		}
@@ -871,7 +889,7 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 				 */
 				MudExit temp;
 				for (int a = 0; a < MudExit.MAX_EXITS; a++) {
-					temp = data.getRoom(vnum).getExit(a);
+					temp = model.getArea().getRoom(vnum).getExit(a);
 					if (temp == null || temp.validLock())
 						continue;
 					else {

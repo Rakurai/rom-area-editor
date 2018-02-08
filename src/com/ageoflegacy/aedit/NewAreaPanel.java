@@ -11,6 +11,7 @@
 package com.ageoflegacy.aedit;
 
 import com.ageoflegacy.aedit.model.*;
+import com.ageoflegacy.aedit.model.area.AreaHeader;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;

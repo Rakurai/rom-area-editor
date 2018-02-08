@@ -1,7 +1,8 @@
 package com.ageoflegacy.aedit.ui.view.mobView;
 
-import com.ageoflegacy.aedit.model.MobTrigger;
-import com.ageoflegacy.aedit.model.MudConstants;
+import com.ageoflegacy.aedit.model.area.Area;
+import com.ageoflegacy.aedit.model.area.MobTrigger;
+import com.ageoflegacy.aedit.model.area.Mobile;
 import com.ageoflegacy.aedit.model.*;
 import net.miginfocom.swing.MigLayout;
 

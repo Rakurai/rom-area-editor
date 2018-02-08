@@ -1,9 +1,10 @@
 // George Frick
 // MudExit.java
 // Area Editor Project, Spring 2002
-package com.ageoflegacy.aedit.model;
+package com.ageoflegacy.aedit.model.area;
 
 import com.ageoflegacy.aedit.model.MudConstants;
+import com.ageoflegacy.aedit.model.Room;
 
 public class MudExit {
 	private Room myRoom;

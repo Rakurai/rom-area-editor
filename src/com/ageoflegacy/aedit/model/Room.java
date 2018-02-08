@@ -5,13 +5,21 @@ package com.ageoflegacy.aedit.model;
 
 import com.ageoflegacy.aedit.model.MudConstants;
 import com.ageoflegacy.aedit.model.Size;
+import com.ageoflegacy.aedit.model.area.Area;
+import com.ageoflegacy.aedit.model.area.Mobile;
+import com.ageoflegacy.aedit.model.area.MudExit;
+import com.ageoflegacy.aedit.model.area.MudObject;
+import com.ageoflegacy.aedit.model.area.MudThing;
 
 import java.util.Collection;
 import java.util.Vector;
 
 public class Room extends MudThing {
+	private int teleport;
 	private int flags;
 	private int sector;
+	private String clanname;
+	private String owner;
 	private int heal;
 	private int mana;
 	protected int myX, myY; // Store where it is graphically :-)
@@ -33,6 +41,7 @@ public class Room extends MudThing {
 			exits[a] = null;
 			exitsFromArea[a] = null;
 		}
+		teleport = 0;
 		heal = 100;
 		mana = 100;
 		myX = -1;
@@ -210,10 +219,14 @@ public class Room extends MudThing {
 		flags = f;
 	}
 
+	public int getTeleport() {
+		return teleport;
+	}
+
 	public int getSector() {
 		return sector;
 	}
-
+	
 	public int getHeal() {
 		return heal;
 	}
@@ -230,8 +243,20 @@ public class Room extends MudThing {
 		mana = m;
 	}
 
+	public void setTeleport(int tele) {
+		teleport = tele;
+	}
+
 	public void setSector(int sect) {
 		sector = sect;
+	}
+
+	public void setClanName(String s) {
+		clanname = s;
+	}
+
+	public void setOwner(String s) {
+		owner = s;		
 	}
 
 	// room names can have color.

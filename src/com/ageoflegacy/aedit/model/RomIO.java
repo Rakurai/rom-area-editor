@@ -3,9 +3,9 @@
 
 package com.ageoflegacy.aedit.model;
 
-import com.ageoflegacy.aedit.model.Area;
-
 import java.io.*;
+
+import com.ageoflegacy.aedit.model.area.Area;
 
 public abstract class RomIO {
 
@@ -40,11 +40,34 @@ public abstract class RomIO {
 		return open;
 	}
 
+	public boolean isWhitespace(int c) {
+		if (c == ' ' || c == '\n' || c == '\r' || c == '\t')
+			return true;
+		
+		return false;
+	}
+	
+	public void skipWhitespace() throws IOException {
+		if (!open)
+			return;
+
+		while (true) {
+			buf2.mark(1);
+
+			if (isWhitespace(buf2.read()))
+				continue;
+
+			buf2.reset();
+			return;
+		}
+	}
+
 	public String getLine() {
 		if (!open)
 			return null;
 
 		try {
+			skipWhitespace();
 			return buf2.readLine();
 		} catch (Exception e) {
 			return null;
@@ -67,8 +90,31 @@ public abstract class RomIO {
 		return temp;
 	}
 
+	protected String readWord(BufferedReader in) throws IOException {
+		skipWhitespace();
+		StringBuilder word = new StringBuilder();
+		
+		while (true) {
+			int c = in.read();
+			
+			if (isWhitespace(c))
+				break;
+
+			word.append(c);
+		}
+		
+		return word.toString();
+	}
+	
+	protected int readInt(BufferedReader in) throws IOException {
+		skipWhitespace();
+		String word = readWord(in);
+		return Integer.parseInt(word);
+	}
+	
 	protected int readVnum(BufferedReader in) {
 		try {
+			skipWhitespace();
 			String temp = in.readLine();
 
 			if (temp.charAt(0) != '#')

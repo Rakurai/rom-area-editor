@@ -3,6 +3,10 @@ package com.ageoflegacy.aedit.ui.view.objectView;
 import com.ageoflegacy.aedit.ui.view.objectView.ObjectView;
 import com.ageoflegacy.aedit.ui.FlagChoice;
 import com.ageoflegacy.aedit.model.*;
+import com.ageoflegacy.aedit.model.area.Area;
+import com.ageoflegacy.aedit.model.area.MudObject;
+import com.ageoflegacy.aedit.model.table.DamTypeTable;
+
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -26,7 +30,7 @@ public class ObjectTypePanel extends JPanel {
 	private final static int ON3 = 8;
 	private final static int ON4 = 16;
 	private final static int ONALL = ON0 | ON1 | ON2 | ON3 | ON4;
-	private Area data;
+	private final Model model;
 	private int vnum;
 	DamTypeTable theDamTypes;
 	WeaponTypeTable theWeaponTypes;
@@ -34,8 +38,8 @@ public class ObjectTypePanel extends JPanel {
 	SpellListTable theSpellList;
 	com.ageoflegacy.aedit.ui.view.objectView.ObjectView myParent;
 
-	public ObjectTypePanel(Area d, DamTypeTable _theDamTypes, ObjectView par) {
-		data = d;
+	public ObjectTypePanel(Model m, DamTypeTable _theDamTypes, ObjectView par) {
+		this.model = m;
 		myParent = par;
 		vnum = -1;
 		theDamTypes = _theDamTypes;
@@ -91,7 +95,7 @@ public class ObjectTypePanel extends JPanel {
 		typeBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				if (vnum != -1) {
-					MudObject me = data.getObject(vnum);
+					MudObject me = model.getArea().getObject(vnum);
 					me.setType(MudConstants.TypeLookup(typeBox.getSelectedIndex()));
 				}
 				myParent.update();
@@ -100,8 +104,8 @@ public class ObjectTypePanel extends JPanel {
 
 		v0.addFocusListener(new v0FocusListener(theWeaponTypes));
 		v1.addFocusListener(new v1FocusListener());
-		v2.addFocusListener(new v2FocusListener(data));
-		v3.addFocusListener(new v3FocusListener(theDamTypes, data));
+		v2.addFocusListener(new v2FocusListener(model.getArea()));
+		v3.addFocusListener(new v3FocusListener(theDamTypes, model.getArea()));
 		v4.addFocusListener(new v4FocusListener());
 	}
 
@@ -118,7 +122,7 @@ public class ObjectTypePanel extends JPanel {
 		vnum = v;
 
 		if (vnum != -1) {
-			MudObject temp = data.getObject(vnum);
+			MudObject temp = model.getArea().getObject(vnum);
 			typeBox.setSelectedIndex(MudConstants.typePositionLookup(temp.getType()));
 		}
 
@@ -133,7 +137,7 @@ public class ObjectTypePanel extends JPanel {
 		if (vnum == -1)
 			which = MudConstants.ITEM_TRASH;
 		else
-			temp = data.getObject(vnum);
+			temp = model.getArea().getObject(vnum);
 
 		switch (which) {
 		case MudConstants.ITEM_LIGHT: {
@@ -183,8 +187,8 @@ public class ObjectTypePanel extends JPanel {
 			v1.setText(Integer.toString(temp.getiValue(1, 1)));
 			v2.setText(Integer.toString(temp.getiValue(2, 1)));
 			st = temp.getsValue(3);
-			if (!theDamTypes.isDamType(st))
-				temp.setsValue(3, theDamTypes.getDefaultType());
+			if (!theDamTypes.isType(st))
+				temp.setsValue(3, theDamTypes.defaultEntry().getName());
 			v3.setText(temp.getsValue(3));
 			v4.setText(MudConstants.flagNameString(temp.getiValue(4)));
 			break;
@@ -230,7 +234,7 @@ public class ObjectTypePanel extends JPanel {
 			v0.setText(Integer.toString(temp.getiValue(0, 1)));
 			v1.setText(MudConstants.containerFlagString(temp.getiValue(1)));
 			if (temp.getiValue(2) != 0) {
-				MudObject obj = data.getObject(temp.getiValue(2));
+				MudObject obj = model.getArea().getObject(temp.getiValue(2));
 				if (obj == null) {
 					v2.setText("No key");
 					temp.setiValue(2, 0);
@@ -332,11 +336,10 @@ public class ObjectTypePanel extends JPanel {
 		case MudConstants.ITEM_BOAT:
 		case MudConstants.ITEM_MAP:
 		case MudConstants.ITEM_WARP_STONE:
-		case MudConstants.ITEM_ROOM_KEY:
 		case MudConstants.ITEM_GEM:
 		case MudConstants.ITEM_JEWELRY:
 		case MudConstants.ITEM_JUKEBOX:
-		case MudConstants.ITEM_ORE: {
+		case MudConstants.ITEM_MATERIAL: {
 			turnOn(OFF);
 			break;
 		}
@@ -405,7 +408,7 @@ public class ObjectTypePanel extends JPanel {
 			int which = MudConstants.TypeLookup(typeBox.getSelectedIndex());
 
 			if (which == MudConstants.ITEM_WEAPON) {
-				MudObject temp = (MudObject) data.getObject(vnum);
+				MudObject temp = (MudObject) model.getArea().getObject(vnum);
 				JComboBox options = theWeaponTypes.getWeaponTypeComboBox();
 				options.setSelectedItem(temp.getsValue(0));
 
@@ -430,7 +433,7 @@ public class ObjectTypePanel extends JPanel {
 				if (vnum == -1)
 					return;
 
-				MudObject temp = data.getObject(vnum);
+				MudObject temp = model.getArea().getObject(vnum);
 				switch (type) {
 				case MudConstants.ITEM_WAND: // all int types
 				case MudConstants.ITEM_STAFF:
@@ -464,7 +467,7 @@ public class ObjectTypePanel extends JPanel {
 			int which = MudConstants.TypeLookup(typeBox.getSelectedIndex());
 
 			if (which == MudConstants.ITEM_CONTAINER) {
-				MudObject temp = (MudObject) data.getObject(vnum);
+				MudObject temp = (MudObject) model.getArea().getObject(vnum);
 				FlagChoice choice = new FlagChoice("container flags", MudConstants.containerFlagNames,
 						MudConstants.containerFlags, MudConstants.NUM_CONTAINER_FLAGS, null);
 				choice.setFlags(temp.getiValue(1));
@@ -480,7 +483,7 @@ public class ObjectTypePanel extends JPanel {
 				update();
 			} else if (which == MudConstants.ITEM_SCROLL || which == MudConstants.ITEM_POTION
 					|| which == MudConstants.ITEM_PILL) {
-				MudObject temp = (MudObject) data.getObject(vnum);
+				MudObject temp = (MudObject) model.getArea().getObject(vnum);
 				JComboBox options = theSpellList.getSpellListComboBox();
 				options.setSelectedItem(temp.getsValue(1));
 
@@ -497,7 +500,7 @@ public class ObjectTypePanel extends JPanel {
 				vnum = temp.vnum;
 				update();
 			} else if (which == MudConstants.ITEM_PORTAL) {
-				MudObject temp = (MudObject) data.getObject(vnum);
+				MudObject temp = (MudObject) model.getArea().getObject(vnum);
 				FlagChoice choice = new FlagChoice("exit flags", MudConstants.exitNames, MudConstants.exitFlags,
 						MudConstants.NUM_EXIT_FLAGS, null);
 				choice.setFlags(temp.getiValue(1));
@@ -522,7 +525,7 @@ public class ObjectTypePanel extends JPanel {
 				if (vnum == -1)
 					return;
 
-				MudObject temp = data.getObject(vnum);
+				MudObject temp = model.getArea().getObject(vnum);
 				switch (type) {
 				case MudConstants.ITEM_WAND: // all int types
 				case MudConstants.ITEM_STAFF:
@@ -565,9 +568,9 @@ public class ObjectTypePanel extends JPanel {
 			int which = MudConstants.TypeLookup(typeBox.getSelectedIndex());
 
 			if (which == MudConstants.ITEM_CONTAINER) {
-				MudObject temp = (MudObject) data.getObject(vnum);
-				JComboBox options = data.getVnumCombo("object");
-				MudObject t2 = (MudObject) data.getObject(temp.getiValue(2));
+				MudObject temp = (MudObject) model.getArea().getObject(vnum);
+				JComboBox options = model.getArea().getVnumCombo("object");
+				MudObject t2 = (MudObject) model.getArea().getObject(temp.getiValue(2));
 				if (t2 != null)
 					options.setSelectedItem(t2);
 
@@ -587,7 +590,7 @@ public class ObjectTypePanel extends JPanel {
 				update();
 			} else if (which == MudConstants.ITEM_SCROLL || which == MudConstants.ITEM_POTION
 					|| which == MudConstants.ITEM_PILL) {
-				MudObject temp = (MudObject) data.getObject(vnum);
+				MudObject temp = (MudObject) model.getArea().getObject(vnum);
 				JComboBox options = theSpellList.getSpellListComboBox();
 				options.setSelectedItem(temp.getsValue(2));
 
@@ -604,7 +607,7 @@ public class ObjectTypePanel extends JPanel {
 				vnum = temp.vnum;
 				update();
 			} else if (which == MudConstants.ITEM_FURNITURE) {
-				MudObject temp = (MudObject) data.getObject(vnum);
+				MudObject temp = (MudObject) model.getArea().getObject(vnum);
 				FlagChoice choice = new FlagChoice("furniture flags", MudConstants.furnitureFlagNames,
 						MudConstants.furnitureFlags, MudConstants.NUM_FURNITURE_FLAGS, null);
 				choice.setFlags(temp.getiValue(2));
@@ -619,7 +622,7 @@ public class ObjectTypePanel extends JPanel {
 				vnum = temp.vnum;
 				update();
 			} else if (which == MudConstants.ITEM_PORTAL) {
-				MudObject temp = (MudObject) data.getObject(vnum);
+				MudObject temp = (MudObject) model.getArea().getObject(vnum);
 				FlagChoice choice = new FlagChoice("portal flags", MudConstants.portalFlagNames,
 						MudConstants.portalFlags, MudConstants.NUM_PORTAL_FLAGS, null);
 				choice.setFlags(temp.getiValue(2));
@@ -634,7 +637,7 @@ public class ObjectTypePanel extends JPanel {
 				vnum = temp.vnum;
 				update();
 			} else if (which == MudConstants.ITEM_DRINK_CON || which == MudConstants.ITEM_FOUNTAIN) {
-				MudObject temp = (MudObject) data.getObject(vnum);
+				MudObject temp = (MudObject) model.getArea().getObject(vnum);
 				JComboBox options = theLiquidTypes.getLiquidTypeComboBox();
 				options.setSelectedItem(temp.getsValue(2));
 
@@ -658,7 +661,7 @@ public class ObjectTypePanel extends JPanel {
 				if (vnum == -1)
 					return;
 
-				MudObject temp = data.getObject(vnum);
+				MudObject temp = model.getArea().getObject(vnum);
 				switch (type) {
 				case MudConstants.ITEM_LIGHT:
 				case MudConstants.ITEM_WAND: // all int types
@@ -701,8 +704,8 @@ public class ObjectTypePanel extends JPanel {
 			int which = MudConstants.TypeLookup(typeBox.getSelectedIndex());
 
 			if (which == MudConstants.ITEM_WEAPON) {
-				MudObject temp = (MudObject) data.getObject(vnum);
-				JComboBox options = theDamTypes.getDamTypeComboBox();
+				MudObject temp = (MudObject) model.getArea().getObject(vnum);
+				JComboBox options = theDamTypes.getComboBox();
 				options.setSelectedItem(temp.getsValue(3));
 
 				int dec = JOptionPane.showConfirmDialog(null, options, "Choose damage type:",
@@ -717,7 +720,7 @@ public class ObjectTypePanel extends JPanel {
 			} else if (which == MudConstants.ITEM_SCROLL || which == MudConstants.ITEM_POTION
 					|| which == MudConstants.ITEM_PILL || which == MudConstants.ITEM_WAND
 					|| which == MudConstants.ITEM_STAFF) {
-				MudObject temp = (MudObject) data.getObject(vnum);
+				MudObject temp = (MudObject) model.getArea().getObject(vnum);
 				JComboBox options = theSpellList.getSpellListComboBox();
 				options.setSelectedItem(temp.getsValue(3));
 
@@ -735,7 +738,7 @@ public class ObjectTypePanel extends JPanel {
 				update();
 			} else if (which == MudConstants.ITEM_FOOD || which == MudConstants.ITEM_DRINK_CON
 					|| which == MudConstants.ITEM_FOUNTAIN) {
-				MudObject temp = (MudObject) data.getObject(vnum);
+				MudObject temp = (MudObject) model.getArea().getObject(vnum);
 				String[] yesno = { "No", "Yes" };
 				JComboBox options = new JComboBox(yesno);
 				options.setSelectedIndex(temp.getiValue(3));
@@ -750,9 +753,9 @@ public class ObjectTypePanel extends JPanel {
 				vnum = temp.vnum;
 				update();
 			} else if (which == MudConstants.ITEM_PORTAL) {
-				MudObject temp = (MudObject) data.getObject(vnum);
-				JComboBox options = data.getVnumCombo("rooms");
-				Room t2 = (Room) data.getRoom(temp.getiValue(3));
+				MudObject temp = (MudObject) model.getArea().getObject(vnum);
+				JComboBox options = model.getArea().getVnumCombo("rooms");
+				Room t2 = (Room) model.getArea().getRoom(temp.getiValue(3));
 				if (t2 == null)
 					options.setSelectedIndex(0);
 				else
@@ -784,7 +787,7 @@ public class ObjectTypePanel extends JPanel {
 				if (vnum == -1)
 					return;
 
-				MudObject temp = data.getObject(vnum);
+				MudObject temp = model.getArea().getObject(vnum);
 				switch (type) {
 				case MudConstants.ITEM_FURNITURE:
 				case MudConstants.ITEM_ARMOR: {
@@ -817,7 +820,7 @@ public class ObjectTypePanel extends JPanel {
 			int which = MudConstants.TypeLookup(typeBox.getSelectedIndex());
 
 			if (which == MudConstants.ITEM_WEAPON) {
-				MudObject temp = (MudObject) data.getObject(vnum);
+				MudObject temp = (MudObject) model.getArea().getObject(vnum);
 				FlagChoice choice = new FlagChoice("weapon flags", MudConstants.weaponFlagNames,
 						MudConstants.weaponFlags, MudConstants.NUM_WEAPON_FLAGS, null);
 				choice.setFlags(temp.getiValue(4));
@@ -833,7 +836,7 @@ public class ObjectTypePanel extends JPanel {
 				update();
 			} else if (which == MudConstants.ITEM_SCROLL || which == MudConstants.ITEM_POTION
 					|| which == MudConstants.ITEM_PILL) {
-				MudObject temp = (MudObject) data.getObject(vnum);
+				MudObject temp = (MudObject) model.getArea().getObject(vnum);
 				JComboBox options = theSpellList.getSpellListComboBox();
 				options.setSelectedItem(temp.getsValue(4));
 
@@ -861,7 +864,7 @@ public class ObjectTypePanel extends JPanel {
 				if (vnum == -1)
 					return;
 
-				MudObject temp = data.getObject(vnum);
+				MudObject temp = model.getArea().getObject(vnum);
 				switch (type) {
 				case MudConstants.ITEM_FURNITURE:
 				case MudConstants.ITEM_CONTAINER: {

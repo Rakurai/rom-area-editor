@@ -1,9 +1,9 @@
 package com.ageoflegacy.aedit.ui.view.roomView;
 
-import com.ageoflegacy.aedit.model.Area;
-import com.ageoflegacy.aedit.model.Mobile;
-import com.ageoflegacy.aedit.model.MudObject;
 import com.ageoflegacy.aedit.model.Room;
+import com.ageoflegacy.aedit.model.area.Area;
+import com.ageoflegacy.aedit.model.area.Mobile;
+import com.ageoflegacy.aedit.model.area.MudObject;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;

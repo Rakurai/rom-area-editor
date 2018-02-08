@@ -665,26 +665,31 @@ public class MudConstants {
 	public final static int ITEM_MAP = 28;
 	public final static int ITEM_PORTAL = 29;
 	public final static int ITEM_WARP_STONE = 30;
-	public final static int ITEM_ROOM_KEY = 31;
+//	public final static int ITEM_ROOM_KEY = 31;
 	public final static int ITEM_GEM = 32;
 	public final static int ITEM_JEWELRY = 33;
 	public final static int ITEM_JUKEBOX = 34;
-	public final static int ITEM_PROJECTILE = 35;
-	public final static int ITEM_UPGRADE = 36;
-	public final static int ITEM_ORE = 37;
-	public final static int ITEM_RESTRING = 38;
-	public final static int ITEM_ENCHANT = 39;
+//	public final static int ITEM_PBTUBE = 35;
+//	public final static int ITEM_PBGUN = 36;
+	public final static int ITEM_MATERIAL = 37;
+	public final static int ITEM_ANVIL = 38;
+	// 39
+	public final static int ITEM_WEDDINGRING = 40;
+	public final static int ITEM_TOKEN = 41;
+	public final static int ITEM_WARP_CRYSTAL = 42;
 
 	public final static String[] typeNames = { "Light", "Scroll", "Wand", "Staff", "Weapon", "Treasure", "Armor",
-			"Potion", "Clothing", "Furniture", "Trash", "Container", "Drink Container", "Key", "Food", "Money", "Boat",
-			"Fountain", "Pill", "Map", "Portal", "Warpstone", "Roomkey", "Gem", "Jewelry", "Jukebox", "Ore" };
+			"Potion", "Clothing", "Furniture", "Trash", "Container", "Drink", "Key", "Food", "Money", "Boat",
+			"Fountain", "Pill", "Map", "Portal", "Warp_stone", "Gem", "Jewelry", "Jukebox", "Material",
+			"Anvil", "Wedding_ring", "Token", "Warp_crystal" };
 
 	public final static int[] typeFlags = { ITEM_LIGHT, ITEM_SCROLL, ITEM_WAND, ITEM_STAFF, ITEM_WEAPON, ITEM_TREASURE,
 			ITEM_ARMOR, ITEM_POTION, ITEM_CLOTHING, ITEM_FURNITURE, ITEM_TRASH, ITEM_CONTAINER, ITEM_DRINK_CON,
 			ITEM_KEY, ITEM_FOOD, ITEM_MONEY, ITEM_BOAT, ITEM_FOUNTAIN, ITEM_PILL, ITEM_MAP, ITEM_PORTAL,
-			ITEM_WARP_STONE, ITEM_ROOM_KEY, ITEM_GEM, ITEM_JEWELRY, ITEM_JUKEBOX, ITEM_ORE };
+			ITEM_WARP_STONE, ITEM_GEM, ITEM_JEWELRY, ITEM_JUKEBOX,
+			ITEM_MATERIAL, ITEM_ANVIL, ITEM_WEDDINGRING, ITEM_TOKEN, ITEM_WARP_CRYSTAL };
 
-	public final static int NUM_ITEMS = 27;
+	public final static int NUM_ITEMS = typeFlags.length;
 
 	public static String stringFromType(int type) {
 		for (int a = 0; a < NUM_ITEMS; a++) {
@@ -699,11 +704,6 @@ public class MudConstants {
 		for (int a = 0; a < NUM_ITEMS; a++) {
 			if (type.equalsIgnoreCase(typeNames[a]))
 				return typeFlags[a];
-		}
-
-		if (type.equalsIgnoreCase("drink")) {
-			// System.out.println("Found drink container");
-			return ITEM_DRINK_CON;
 		}
 
 		return ITEM_TRASH;
@@ -1195,4 +1195,5 @@ public class MudConstants {
 			TRIG_SURR, TRIG_EXITED };
 
 	public final static int NUM_TRIGGERS = 17;
+
 }

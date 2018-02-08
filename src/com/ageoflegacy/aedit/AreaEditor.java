@@ -8,9 +8,27 @@
 
 package com.ageoflegacy.aedit;
 
+import java.io.File;
+
+import com.ageoflegacy.aedit.model.Model;
+
 public class AreaEditor {
 	// Main function
 	public static void main(String[] args) {
-		AreaEditorFrame ed = new AreaEditorFrame("Animud/Rom/Cynthe Area Editor");
+		// initialize model
+		try {
+			Model model = new Model();
+		
+			if (args[0] != null) {
+				model.loadArea(new File(args[0]));
+			}
+			else {
+				// start GUI
+				AreaEditorFrame ed = new AreaEditorFrame("Animud/Rom/Cynthe Area Editor", model);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

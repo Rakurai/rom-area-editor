@@ -9,11 +9,16 @@
 
 package com.ageoflegacy.aedit;
 
+import com.ageoflegacy.aedit.io.FileParser;
 import com.ageoflegacy.aedit.model.*;
+import com.ageoflegacy.aedit.model.area.Area;
+import com.ageoflegacy.aedit.model.area.AreaHeader;
 import com.ageoflegacy.aedit.ui.*;
 import com.ageoflegacy.aedit.ui.view.scriptView.ScriptView;
 import com.ageoflegacy.aedit.ui.view.EditorView;
 
+import javax.json.Json;
+import javax.json.JsonArray;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.ChangeEvent;
@@ -21,6 +26,9 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
@@ -42,7 +50,7 @@ public class AreaEditorFrame extends JFrame {
 	final static int TAB_COUNT = 5;
 
 	/* The model */
-	Area theArea;
+	Model model;
 
 	/* FILE MENU */
 	JMenu fileMenu; // File:
@@ -58,25 +66,27 @@ public class AreaEditorFrame extends JFrame {
 	/* preferences and data */
 	Map<String, JMenuItem> recentFiles;
 
-	public AreaEditorFrame(String title) {
+	public AreaEditorFrame(String title, Model model) {
 		super(title);
 		JPanel mainEditorPanel = new JPanel();
 		mainEditorPanel.setPreferredSize(new Dimension(1280, 1024));
 
+		this.model = model;
 		recentFiles = new HashMap<String, JMenuItem>();
 
 		ClassLoader loader = ClassLoader.getSystemClassLoader();
-		ImageIcon jMenuItemBullet = new ImageIcon(loader.getResource("bullet2.gif"));
-		ImageIcon jMenuBullet = new ImageIcon(loader.getResource("bullet.gif"));
-		ImageIcon jMenuAboutBullet = new ImageIcon(loader.getResource("bullet3.gif"));
+		URL t = loader.getResource("bullet.gif");
+		
+		ImageIcon jMenuItemBullet = new ImageIcon(loader.getResource("/bullet2.gif"));
+		ImageIcon jMenuBullet = new ImageIcon(loader.getResource("/bullet.gif"));
+		ImageIcon jMenuAboutBullet = new ImageIcon(loader.getResource("/bullet3.gif"));
 		setJMenuBar(createFileMenu(jMenuBullet, jMenuItemBullet, jMenuAboutBullet));
 
-		theArea = new Area();
-		myOverView = new com.ageoflegacy.aedit.ui.view.overView.OverView(theArea);
-		myRoomView = new com.ageoflegacy.aedit.ui.view.roomView.RoomView(theArea);
-		myObjectView = new com.ageoflegacy.aedit.ui.view.objectView.ObjectView(theArea);
-		myMobView = new com.ageoflegacy.aedit.ui.view.mobView.MobView(theArea);
-		myScriptView = new ScriptView(theArea);
+		myOverView = new com.ageoflegacy.aedit.ui.view.overView.OverView(model);
+		myRoomView = new com.ageoflegacy.aedit.ui.view.roomView.RoomView(model);
+		myObjectView = new com.ageoflegacy.aedit.ui.view.objectView.ObjectView(model);
+		myMobView = new com.ageoflegacy.aedit.ui.view.mobView.MobView(model);
+		myScriptView = new ScriptView(model);
 		myLayout = new GridBagLayout();
 		constraint = new GridBagConstraints();
 		mainEditorPanel.setLayout(myLayout);
@@ -150,28 +160,26 @@ public class AreaEditorFrame extends JFrame {
 
 	private void readPreferences() {
 		System.out.print("Loading preferences...");
+		FileInputStream stream;
+
 		try {
-			int count;
-			String temp;
-			RomLoader myLoader = new RomLoader(PREFS_FILE);
-			if (!myLoader.isOpen()) {
-				System.out.println("No preferences file, creating as needed.");
-				return;
-			}
-
-			temp = myLoader.getLine();
-			count = Integer.parseInt(temp);
-
+			stream = new FileInputStream(PREFS_FILE);
+			FileParser parser = new FileParser(stream);
+	
+			int count = parser.readInt();
+	
 			for (int a = 0; a < count; a++) {
-				String recentFile = myLoader.getLine();
+				String recentFile = parser.readToEOL();
 				addRecentFile(recentFile);
 				System.out.println("Added recent file: " + recentFile);
 			}
 
-			System.out.println("...Complete.");
-		} catch (Exception exc) {
-			System.out.println("...Aborted, error in preference file.");
+			stream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+
+		System.out.println("...Complete.");
 	}
 
 	private void addRecentFile(String toAdd) {
@@ -266,9 +274,14 @@ public class AreaEditorFrame extends JFrame {
 			int selected = fileChooser.showOpenDialog(myparent.getContentPane());
 
 			if (selected == JFileChooser.APPROVE_OPTION) {
-				openFile(fileChooser.getSelectedFile());
-				fileSave.setEnabled(true);
-				fileSaveAs.setEnabled(true);
+				try {
+					openFile(fileChooser.getSelectedFile());
+					fileSave.setEnabled(true);
+					fileSaveAs.setEnabled(true);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			} else if (selected == JFileChooser.CANCEL_OPTION) {
 				System.out.println("Canceled Load");
 			}
@@ -290,7 +303,7 @@ public class AreaEditorFrame extends JFrame {
 			fileChooser.addChoosableFileFilter(new JsonFileFilter());
 			fileChooser.setFileView(new MudFileView());
 			try {
-				File ft = new File(new File(theArea.getFileName()).getCanonicalPath());
+				File ft = new File(new File(model.getArea().getFileName()).getCanonicalPath());
 				fileChooser.setSelectedFile(ft);
 			} catch (Exception fError) {
 			}
@@ -300,12 +313,12 @@ public class AreaEditorFrame extends JFrame {
 			if (selected == JFileChooser.APPROVE_OPTION) {
 				if (fileChooser.getFileFilter().getDescription().equals(JsonFileFilter.DESCRIPTION)) {
 					RomJsonWriter writer = new RomJsonWriter(fileChooser.getSelectedFile());
-					writer.writeArea(theArea);
+					writer.writeArea(model.getArea());
 				} else if (fileChooser.getFileFilter().getDescription().equals(RomFileFilter.DESCRIPTION)) {
 					RomWriter writer = new RomWriter(fileChooser.getSelectedFile());
-					writer.writeArea(theArea);
+					writer.writeArea(model.getArea());
 				}
-				theArea.setPathName(fileChooser.getSelectedFile().getPath());
+				model.getArea().setPathName(fileChooser.getSelectedFile().getPath());
 				fileSave.setEnabled(true);
 				addRecentFile(fileChooser.getSelectedFile().getAbsolutePath());
 			} else if (selected == JFileChooser.CANCEL_OPTION) {
@@ -316,21 +329,19 @@ public class AreaEditorFrame extends JFrame {
 
 	class saveListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			String fileName1 = theArea.getPathName();
+			String fileName1 = model.getArea().getPathName();
 			if (fileName1 == null) {
 				fileSave.setEnabled(false);
 				return;
 			}
 			RomWriter writer = new RomWriter(fileName1);
-			writer.writeArea(theArea);
+			writer.writeArea(model.getArea());
 		}
 	}
 
-	private void openFile(File toOpen) {
-		theArea.clear();
-		RomLoader loader = new RomLoader(toOpen);
-		theArea = loader.readArea(theArea);
-		theArea.transformResets();
+	private void openFile(File toOpen) throws FileNotFoundException, IOException {
+		model.loadArea(toOpen);
+
 		update();
 		toggleTabs(true);
 		addRecentFile(toOpen.getAbsolutePath());
@@ -345,7 +356,12 @@ public class AreaEditorFrame extends JFrame {
 
 		public void actionPerformed(ActionEvent e) {
 			System.out.println("Opening recent file..." + fullFileName);
-			openFile(new File(fullFileName));
+			try {
+				openFile(new File(fullFileName));
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 	}
 
@@ -357,7 +373,7 @@ public class AreaEditorFrame extends JFrame {
 	}
 
 	private void closeArea() {
-		theArea.clear();
+		model.getArea().clear();
 		update();
 		toggleTabs(false);
 	}
@@ -374,7 +390,7 @@ public class AreaEditorFrame extends JFrame {
 			AreaHeader header = newAreaPanel.getNewArea();
 			if (header != null) {
 				closeArea();
-				theArea.setHeader(header);
+				model.getArea().setHeader(header);
 				toggleTabs(true);
 				update();
 			}

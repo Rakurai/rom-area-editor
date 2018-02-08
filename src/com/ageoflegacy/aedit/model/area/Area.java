@@ -1,6 +1,7 @@
-package com.ageoflegacy.aedit.model;
+package com.ageoflegacy.aedit.model.area;
 
-import com.ageoflegacy.aedit.model.MobileProgram;
+import com.ageoflegacy.aedit.model.MudConstants;
+import com.ageoflegacy.aedit.model.Room;
 
 import javax.json.JsonValue;
 import javax.swing.*;
@@ -51,6 +52,10 @@ public class Area {
 		return getHeader().getAreaName();
 	}
 
+	public String getAreaTitle() {
+		return getHeader().getAreaTitle();
+	}
+	
 	public String getBuilder() {
 		return getHeader().getBuilder();
 	}
@@ -375,6 +380,10 @@ public class Area {
 		getHeader().setAreaName(newname);
 	}
 
+	public void setAreaTitle(String string) {
+		getHeader().setAreaTitle(string);
+	}
+
 	public void setRangeString(String str) {
 		getHeader().setRangeString(str);
 	}
@@ -651,14 +660,12 @@ public class Area {
 	 * on that mobiles vnum. 11/28/2003, added code to filter bad vnums
 	 */
 	public void transformResets() {
-		String command;
 		Mobile mob = null;
 		MudReset prevReset = null;
 
 		try {
 			for (MudReset reset : resets) {
-				command = reset.getCommand().toUpperCase();
-				switch (command.charAt(0)) {
+				switch (reset.getCommand()) {
 				case 'M': {
 					// Add a mobile to a room
 					int mobVnum = reset.getArg(1);
@@ -716,7 +723,7 @@ public class Area {
 					// duplication)
 					// otherwise old style rom resets will put multiples in our
 					// new resets...
-					if (mob.getInventory().contains(myObj) && prevReset.getCommand().toUpperCase().charAt(0) != 'G'
+					if (mob.getInventory().contains(myObj) && prevReset.getCommand() != 'G'
 							&& prevReset.getArg(1) != objVnum) {
 						break;
 					}

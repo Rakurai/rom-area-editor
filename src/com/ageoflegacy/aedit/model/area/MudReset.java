@@ -1,21 +1,18 @@
-package com.ageoflegacy.aedit.model;
+package com.ageoflegacy.aedit.model.area;
 
 public class MudReset {
-	String command;
+	char command;
 	int arg1, arg2, arg3, arg4;
-	int chance; // animud only.
 
-	public MudReset(String c, int a1, int a2, int a3, int a4, int newChance) {
-		command = c;
+	public MudReset(char letter, int a1, int a2, int a3, int a4) {
+		command = letter;
 		arg1 = a1;
 		arg2 = a2;
 		arg3 = a3;
 		arg4 = a4;
-		chance = newChance;
-		// System.out.println("I'm a new reset: " + toString() );
 	}
 
-	public String getCommand() {
+	public char getCommand() {
 		return command;
 	}
 
@@ -59,25 +56,25 @@ public class MudReset {
 
 	public String toString() {
 		String temp;
-		switch (command.charAt(0)) {
+		switch (command) {
 		case 'M': {
 			temp = "M 0 " + IA(arg1) + " " + IA(arg2) + " " + IA(arg3) + " " + IA(arg4);
 			break;
 		}
 		case 'O': { // obj // room
-			temp = "O " + IA(chance) + " " + IA(arg1) + " 0 " + IA(arg3);
+			temp = "O 0 " + IA(arg1) + " 0 " + IA(arg3);
 			break;
 		}
 		case 'P': {
-			temp = "P " + IA(chance) + " " + IA(arg1) + " " + IA(arg2) + " " + IA(arg3) + " " + IA(arg4);
+			temp = "P 0 " + IA(arg1) + " " + IA(arg2) + " " + IA(arg3) + " " + IA(arg4);
 			break;
 		}
 		case 'G': {
-			temp = "G " + IA(chance) + " " + IA(arg1) + " 0";
+			temp = "G 0 " + IA(arg1) + " 0";
 			break;
 		}
 		case 'E': {
-			temp = "E " + IA(chance) + " " + IA(arg1) + " 0 " + IA(arg3);
+			temp = "E 0 " + IA(arg1) + " 0 " + IA(arg3);
 			break;
 		}
 		case 'D': {

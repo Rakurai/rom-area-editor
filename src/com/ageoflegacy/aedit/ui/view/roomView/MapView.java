@@ -10,9 +10,9 @@ package com.ageoflegacy.aedit.ui.view.roomView;
 
 import com.ageoflegacy.aedit.model.MudConstants;
 import com.ageoflegacy.aedit.ui.view.EditorView;
-import com.ageoflegacy.aedit.model.Area;
 import com.ageoflegacy.aedit.model.Room;
-import com.ageoflegacy.aedit.model.MudExit;
+import com.ageoflegacy.aedit.model.area.Area;
+import com.ageoflegacy.aedit.model.area.MudExit;
 
 import javax.swing.*;
 import java.awt.*;

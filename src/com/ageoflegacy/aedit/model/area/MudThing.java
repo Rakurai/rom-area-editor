@@ -4,9 +4,11 @@
 //
 // This is an abstract class to represent an object, room, or mobile in
 // the model editor. It may represent more also.
-package com.ageoflegacy.aedit.model;
+package com.ageoflegacy.aedit.model.area;
 
 import com.ageoflegacy.aedit.beans.Armor;
+import com.ageoflegacy.aedit.model.RomIO;
+import com.ageoflegacy.aedit.model.Size;
 
 import java.util.Map;
 import java.util.TreeMap;

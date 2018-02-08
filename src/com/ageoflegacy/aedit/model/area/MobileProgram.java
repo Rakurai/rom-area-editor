@@ -1,4 +1,4 @@
-package com.ageoflegacy.aedit.model;
+package com.ageoflegacy.aedit.model.area;
 
 public class MobileProgram {
 	int vnum;

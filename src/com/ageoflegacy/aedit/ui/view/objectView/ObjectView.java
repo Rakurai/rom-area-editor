@@ -7,6 +7,9 @@ package com.ageoflegacy.aedit.ui.view.objectView;
 import com.ageoflegacy.aedit.beans.Armor;
 import com.ageoflegacy.aedit.beans.Dice;
 import com.ageoflegacy.aedit.model.*;
+import com.ageoflegacy.aedit.model.area.Area;
+import com.ageoflegacy.aedit.model.area.MudObject;
+import com.ageoflegacy.aedit.model.area.ObjectAffect;
 import com.ageoflegacy.aedit.ui.*;
 import net.miginfocom.swing.MigLayout;
 
@@ -53,12 +56,12 @@ public class ObjectView extends com.ageoflegacy.aedit.ui.view.EditorView impleme
 	ClassLoader loader;
 	URL b1;
 
-	public ObjectView(Area ar) {
-		super(ar);
+	public ObjectView(Model m) {
+		super(m);
 		loader = ClassLoader.getSystemClassLoader();
 		b1 = loader.getResource("dice.gif");
 
-		vnumBox = data.getVnumCombo("obj");
+		vnumBox = model.getArea().getVnumCombo("obj");
 		newObjectButton = new JButton("New");
 		deleteObjectButton = new JButton("Delete");
 		nextButton = new JButton("Next");
@@ -121,7 +124,7 @@ public class ObjectView extends com.ageoflegacy.aedit.ui.view.EditorView impleme
 		extraFlags = new FlagChoice("Extra Flags", MudConstants.extraNames, MudConstants.extraFlags,
 				MudConstants.NUM_EXTRA, this, 3);
 
-		typePanel = new ObjectTypePanel(data, DamTypeTable.getInstance(), this);
+		typePanel = new ObjectTypePanel(model, model.getDamTypeTable(), this);
 		affPanel = new JAffectPanel();
 
 		inventoryPanel = new ObjInPanel();
@@ -173,7 +176,7 @@ public class ObjectView extends com.ageoflegacy.aedit.ui.view.EditorView impleme
 	}
 
 	public void update() {
-		if (data.getObjectCount() == 0) {
+		if (model.getArea().getObjectCount() == 0) {
 			nameField.setText("no object");
 			shortField.setText("no object");
 			longField.setText("no object");
@@ -187,12 +190,12 @@ public class ObjectView extends com.ageoflegacy.aedit.ui.view.EditorView impleme
 			typePanel.update(-1);
 			setEnabled(false);
 		} else {
-			if (vnum == -1 || vnum < data.getLowVnum() || vnum > data.getHighVnum())
-				vnum = data.getFirstObjectVnum();
+			if (vnum == -1 || vnum < model.getArea().getLowVnum() || vnum > model.getArea().getHighVnum())
+				vnum = model.getArea().getFirstObjectVnum();
 
 			MudObject temp = (MudObject) vnumBox.getSelectedItem();
 			if (temp == null || temp.getVnum() != vnum)
-				temp = data.getObject(vnum);
+				temp = model.getArea().getObject(vnum);
 
 			nameField.setText(temp.getName());
 			shortField.setText(temp.getShortDesc());
@@ -213,7 +216,7 @@ public class ObjectView extends com.ageoflegacy.aedit.ui.view.EditorView impleme
 				inventoryPanel.setEnabled(true);
 
 		}
-		vnumBox.setSelectedItem(data.getObject(vnum));
+		vnumBox.setSelectedItem(model.getArea().getObject(vnum));
 		inventoryPanel.update(vnum);
 	}
 
@@ -294,7 +297,7 @@ public class ObjectView extends com.ageoflegacy.aedit.ui.view.EditorView impleme
 			addButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					ObjectAffect temp;
-					MudObject oTemp = data.getObject(vnum);
+					MudObject oTemp = model.getArea().getObject(vnum);
 
 					if (oTemp == null)
 						return;
@@ -324,7 +327,7 @@ public class ObjectView extends com.ageoflegacy.aedit.ui.view.EditorView impleme
 				public void actionPerformed(ActionEvent e) {
 					ObjectAffect temp = (ObjectAffect) affectList.getSelectedValue();
 
-					MudObject oTemp = data.getObject(vnum);
+					MudObject oTemp = model.getArea().getObject(vnum);
 
 					if (temp == null || oTemp == null)
 						return;
@@ -357,12 +360,12 @@ public class ObjectView extends com.ageoflegacy.aedit.ui.view.EditorView impleme
 		}
 
 		public void update(int vnum) {
-			if (data.getObjectCount() == 0 || vnum == -1) {
+			if (model.getArea().getObjectCount() == 0 || vnum == -1) {
 				setEnabled(false);
 				return;
 			}
 
-			MudObject temp = data.getObject(vnum);
+			MudObject temp = model.getArea().getObject(vnum);
 
 			affectList.setListData(temp.getAffects().toArray(new ObjectAffect[temp.getAffects().size()]));
 			affectType.setSelectedIndex(0);
@@ -371,7 +374,7 @@ public class ObjectView extends com.ageoflegacy.aedit.ui.view.EditorView impleme
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		MudObject temp = data.getObject(vnum);
+		MudObject temp = model.getArea().getObject(vnum);
 		if (temp == null)
 			return;
 		// set flags.
@@ -403,7 +406,7 @@ public class ObjectView extends com.ageoflegacy.aedit.ui.view.EditorView impleme
 
 		diceButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				MudObject obj = data.getObject(vnum);
+				MudObject obj = model.getArea().getObject(vnum);
 				if (obj == null)
 					return;
 
@@ -431,14 +434,14 @@ public class ObjectView extends com.ageoflegacy.aedit.ui.view.EditorView impleme
 
 		previousButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (vnum <= data.getFirstObjectVnum())
+				if (vnum <= model.getArea().getFirstObjectVnum())
 					return;
 
 				int temp = vnum - 1;
-				while (data.getObject(temp) == null && temp >= data.getFirstObjectVnum())
+				while (model.getArea().getObject(temp) == null && temp >= model.getArea().getFirstObjectVnum())
 					temp--;
 
-				if (temp >= data.getFirstObjectVnum())
+				if (temp >= model.getArea().getFirstObjectVnum())
 					vnum = temp;
 
 				update(vnum);
@@ -448,14 +451,14 @@ public class ObjectView extends com.ageoflegacy.aedit.ui.view.EditorView impleme
 
 		nextButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (vnum >= data.getHighVnum())
+				if (vnum >= model.getArea().getHighVnum())
 					return;
 
 				int temp = vnum + 1;
-				while (data.getObject(temp) == null && temp <= data.getHighVnum())
+				while (model.getArea().getObject(temp) == null && temp <= model.getArea().getHighVnum())
 					temp++;
 
-				if (temp <= data.getHighVnum())
+				if (temp <= model.getArea().getHighVnum())
 					vnum = temp;
 
 				update(vnum);
@@ -467,13 +470,13 @@ public class ObjectView extends com.ageoflegacy.aedit.ui.view.EditorView impleme
 				/*
 				 * Get the lowest available mob vnum
 				 */
-				int newVnum = data.getFreeObjectVnum();
+				int newVnum = model.getArea().getFreeObjectVnum();
 				if (newVnum == -1) {
 					inform("You are out of vnums!");
 					return;
 				}
-				MudObject temp = new MudObject(newVnum, data, vnum);
-				data.insert(temp);
+				MudObject temp = new MudObject(newVnum, model.getArea(), vnum);
+				model.getArea().insert(temp);
 				update(newVnum);
 			}
 		});
@@ -483,13 +486,13 @@ public class ObjectView extends com.ageoflegacy.aedit.ui.view.EditorView impleme
 				/*
 				 * Get the lowest available mob vnum
 				 */
-				int vnum = data.getFreeObjectVnum();
+				int vnum = model.getArea().getFreeObjectVnum();
 				if (vnum == -1) {
 					inform("You are out of vnums!");
 					return;
 				}
-				MudObject temp = new MudObject(vnum, data);
-				data.insert(temp);
+				MudObject temp = new MudObject(vnum, model.getArea());
+				model.getArea().insert(temp);
 				update(vnum);
 			}
 		});
@@ -499,7 +502,7 @@ public class ObjectView extends com.ageoflegacy.aedit.ui.view.EditorView impleme
 				if (!confirm("Please confirm Object deletion. All resets will be lost."))
 					return;
 
-				data.deleteObject(vnum);
+				model.getArea().deleteObject(vnum);
 				vnum = -1;
 				update();
 			}
@@ -546,7 +549,7 @@ public class ObjectView extends com.ageoflegacy.aedit.ui.view.EditorView impleme
 
 			addButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					MudObject obj = data.getObject(vnum);
+					MudObject obj = model.getArea().getObject(vnum);
 					MudObject myObj = (MudObject) list.getSelectedItem();
 
 					if (obj == null || myObj == null) {
@@ -573,7 +576,7 @@ public class ObjectView extends com.ageoflegacy.aedit.ui.view.EditorView impleme
 
 			clearButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					MudObject obj = data.getObject(vnum);
+					MudObject obj = model.getArea().getObject(vnum);
 					if (obj == null)
 						return;
 					obj.getInventory().clear();
@@ -586,7 +589,7 @@ public class ObjectView extends com.ageoflegacy.aedit.ui.view.EditorView impleme
 			removeButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					MudObject myObj = (MudObject) items.getSelectedValue();
-					MudObject obj = data.getObject(vnum);
+					MudObject obj = model.getArea().getObject(vnum);
 					if (obj == null || myObj == null)
 						return;
 
@@ -607,10 +610,10 @@ public class ObjectView extends com.ageoflegacy.aedit.ui.view.EditorView impleme
 			items.setEnabled(enable);
 			list.setEnabled(enable);
 
-			if (vnum == -1 || data.getObjectCount() == 0)
+			if (vnum == -1 || model.getArea().getObjectCount() == 0)
 				return;
 
-			MudObject obj = data.getObject(vnum);
+			MudObject obj = model.getArea().getObject(vnum);
 
 			if (obj == null) {
 				System.out.println("Bad obj in inventory panel");
@@ -628,7 +631,7 @@ public class ObjectView extends com.ageoflegacy.aedit.ui.view.EditorView impleme
 		}
 
 		public void update() {
-			if (data.getObjectCount() > 0)
+			if (model.getArea().getObjectCount() > 0)
 				setEnabled(true);
 			else
 				setEnabled(false);
@@ -642,7 +645,7 @@ public class ObjectView extends com.ageoflegacy.aedit.ui.view.EditorView impleme
 			if (myVnum == -1)
 				return;
 
-			MudObject obj = data.getObject(myVnum);
+			MudObject obj = model.getArea().getObject(myVnum);
 
 			if (obj == null) {
 				System.out.println("Bad obj in inventory panel");
@@ -664,8 +667,8 @@ public class ObjectView extends com.ageoflegacy.aedit.ui.view.EditorView impleme
 
 			list.removeAllItems();
 
-			for (int loop = data.getLowVnum(); loop <= data.getHighVnum(); loop++) {
-				temp = data.getObject(loop);
+			for (int loop = model.getArea().getLowVnum(); loop <= model.getArea().getHighVnum(); loop++) {
+				temp = model.getArea().getObject(loop);
 
 				if (temp == null)
 					continue;
@@ -714,7 +717,7 @@ public class ObjectView extends com.ageoflegacy.aedit.ui.view.EditorView impleme
 		}
 
 		public void focusLost(FocusEvent e) {
-			MudObject obj = data.getObject(vnum);
+			MudObject obj = model.getArea().getObject(vnum);
 			if (obj == null)
 				return;
 

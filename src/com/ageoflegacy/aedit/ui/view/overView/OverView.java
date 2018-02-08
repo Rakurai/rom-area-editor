@@ -8,8 +8,9 @@
  */
 package com.ageoflegacy.aedit.ui.view.overView;
 
+import com.ageoflegacy.aedit.model.Model;
 import com.ageoflegacy.aedit.model.MudConstants;
-import com.ageoflegacy.aedit.model.Area;
+import com.ageoflegacy.aedit.model.area.Area;
 import com.ageoflegacy.aedit.ui.view.EditorView;
 import com.ageoflegacy.aedit.ui.FlagChoice;
 import com.ageoflegacy.aedit.ui.JMudNumberField;
@@ -53,8 +54,8 @@ public class OverView extends EditorView implements ActionListener {
 		NUM_OBJECTS,
 	}
 	
-	public OverView(Area ar) {
-		super(ar);
+	public OverView(Model m) {
+		super(m);
 		this.setLayout(new MigLayout("fillx"));
 
 		JPanel overviewPanel = new JPanel();
@@ -99,18 +100,18 @@ public class OverView extends EditorView implements ActionListener {
 
 	// update the display from the data
 	public void update() {
-		fields[field_types.FILE_NAME.ordinal()].setText(data.getFileName());
-		fields[field_types.AREA_NAME.ordinal()].setText(data.getAreaName());
-		fields[field_types.BUILDER.ordinal()].setText(data.getBuilder());
-		fields[field_types.VNUM_LOW.ordinal()].setText(Integer.toString(data.getLowVnum()));
-		fields[field_types.VNUM_HIGH.ordinal()].setText(Integer.toString(data.getHighVnum()));
-		fields[field_types.NUM_RESETS.ordinal()].setText(Integer.toString(data.getResetCount()));
-		fields[field_types.NUM_EXITS_OUT.ordinal()].setText(data.getExitFromAreaCount());
-		fields[field_types.NUM_ROOMS.ordinal()].setText(Integer.toString(data.getRoomCount()));
-		fields[field_types.NUM_MOBS.ordinal()].setText(Integer.toString(data.getMobCount()));
-		fields[field_types.NUM_OBJECTS.ordinal()].setText(Integer.toString(data.getObjectCount()));
-		areaFlagChoice.setFlags(data.getFlags());
-		if (data.valid()) {
+		fields[field_types.FILE_NAME.ordinal()].setText(model.getArea().getFileName());
+		fields[field_types.AREA_NAME.ordinal()].setText(model.getArea().getAreaName());
+		fields[field_types.BUILDER.ordinal()].setText(model.getArea().getBuilder());
+		fields[field_types.VNUM_LOW.ordinal()].setText(Integer.toString(model.getArea().getLowVnum()));
+		fields[field_types.VNUM_HIGH.ordinal()].setText(Integer.toString(model.getArea().getHighVnum()));
+		fields[field_types.NUM_RESETS.ordinal()].setText(Integer.toString(model.getArea().getResetCount()));
+		fields[field_types.NUM_EXITS_OUT.ordinal()].setText(model.getArea().getExitFromAreaCount());
+		fields[field_types.NUM_ROOMS.ordinal()].setText(Integer.toString(model.getArea().getRoomCount()));
+		fields[field_types.NUM_MOBS.ordinal()].setText(Integer.toString(model.getArea().getMobCount()));
+		fields[field_types.NUM_OBJECTS.ordinal()].setText(Integer.toString(model.getArea().getObjectCount()));
+		areaFlagChoice.setFlags(model.getArea().getFlags());
+		if (model.getArea().valid()) {
 			edit.setEnabled(true);
 			revnum.setEnabled(true);
 			areaFlagChoice.setEnabled(true);
@@ -128,7 +129,7 @@ public class OverView extends EditorView implements ActionListener {
 
 	// When model flags are adjusted, set to data
 	public void actionPerformed(ActionEvent e) {
-		data.setFlags(areaFlagChoice.getFlags());
+		model.getArea().setFlags(areaFlagChoice.getFlags());
 		update();
 	}
 
@@ -174,7 +175,7 @@ public class OverView extends EditorView implements ActionListener {
 					return false;
 				}
 				int temp = (highv - lowv) + 1;
-				if (temp < data.getRoomCount() || temp < data.getObjectCount() || temp < data.getMobCount()) {
+				if (temp < model.getArea().getRoomCount() || temp < model.getArea().getObjectCount() || temp < model.getArea().getMobCount()) {
 					JOptionPane.showMessageDialog(null,
 							"Vnum range must be great enough to hold all objects, mobiles and rooms.", "Too few vnums!",
 							JOptionPane.ERROR_MESSAGE);
@@ -251,7 +252,7 @@ public class OverView extends EditorView implements ActionListener {
 			int errornum = -1;
 			Object[] options = { "Revnum", "Cancel" };
 
-			oldField.setText(Integer.toString(data.getLowVnum()));
+			oldField.setText(Integer.toString(model.getArea().getLowVnum()));
 			do {
 				errornum = -1;
 				newField.setText("");
@@ -273,7 +274,7 @@ public class OverView extends EditorView implements ActionListener {
 							errornum = 1;
 							continue;
 						}
-						data.reVnum(temp);
+						model.getArea().reVnum(temp);
 						update(temp);
 						return;
 					} catch (Exception exc) {
@@ -339,12 +340,12 @@ public class OverView extends EditorView implements ActionListener {
 				layout.setConstraints(fields[a], constraint);
 				temp.add(fields[a]);
 			}
-			fields[field_types.FILE_NAME.ordinal()].setText(data.getFileName());
-			fields[field_types.AREA_NAME.ordinal()].setText(data.getAreaName());
-			fields[field_types.BUILDER.ordinal()].setText(data.getBuilder());
+			fields[field_types.FILE_NAME.ordinal()].setText(model.getArea().getFileName());
+			fields[field_types.AREA_NAME.ordinal()].setText(model.getArea().getAreaName());
+			fields[field_types.BUILDER.ordinal()].setText(model.getArea().getBuilder());
 			fields[field_types.VNUM_LOW.ordinal()].setEnabled(false);
 			fields[field_types.VNUM_LOW.ordinal()].setText("Use REVNUM to change starting vnum.");
-			fields[field_types.VNUM_HIGH.ordinal()].setText(Integer.toString(data.getHighVnum()));
+			fields[field_types.VNUM_HIGH.ordinal()].setText(Integer.toString(model.getArea().getHighVnum()));
 			fields[field_types.VNUM_HIGH.ordinal()].setEnabled(false);
 		}
 
@@ -353,16 +354,16 @@ public class OverView extends EditorView implements ActionListener {
 			int errornum = -1;
 			Object[] options = { "OK", "CANCEL" };
 
-			fields[field_types.FILE_NAME.ordinal()].setText(data.getFileName());
-			fields[field_types.AREA_NAME.ordinal()].setText(data.getAreaName());
-			fields[field_types.BUILDER.ordinal()].setText(data.getBuilder());
+			fields[field_types.FILE_NAME.ordinal()].setText(model.getArea().getFileName());
+			fields[field_types.AREA_NAME.ordinal()].setText(model.getArea().getAreaName());
+			fields[field_types.BUILDER.ordinal()].setText(model.getArea().getBuilder());
 			fields[field_types.VNUM_LOW.ordinal()].setText("Use REVNUM to change starting vnum.");
-			fields[field_types.VNUM_HIGH.ordinal()].setText(Integer.toString(data.getHighVnum()));
+			fields[field_types.VNUM_HIGH.ordinal()].setText(Integer.toString(model.getArea().getHighVnum()));
 			do {
 				errornum = -1;
 				choice = JOptionPane.showOptionDialog(null, temp, "Basic Area Data", JOptionPane.DEFAULT_OPTION,
 						JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
-				fields[field_types.VNUM_LOW.ordinal()].setText(Integer.toString(data.getLowVnum()));
+				fields[field_types.VNUM_LOW.ordinal()].setText(Integer.toString(model.getArea().getLowVnum()));
 				if (choice == 0) {
 					for (int a = 0; a < NUM_FIELDS; a++) {
 						if (fields[a].getText().equals("")) {
@@ -376,10 +377,10 @@ public class OverView extends EditorView implements ActionListener {
 					return;
 			} while (choice == 0 && (errornum == 1 || checkBasicData(fields) == false));
 
-			data.setFileName(fields[field_types.FILE_NAME.ordinal()].getText());
-			data.setAreaName(fields[field_types.AREA_NAME.ordinal()].getText());
-			data.setBuilder(fields[field_types.BUILDER.ordinal()].getText());
-			data.setVnumRange(
+			model.getArea().setFileName(fields[field_types.FILE_NAME.ordinal()].getText());
+			model.getArea().setAreaName(fields[field_types.AREA_NAME.ordinal()].getText());
+			model.getArea().setBuilder(fields[field_types.BUILDER.ordinal()].getText());
+			model.getArea().setVnumRange(
 				Integer.parseInt(fields[field_types.VNUM_LOW.ordinal()].getText()),
 				Integer.parseInt(fields[field_types.VNUM_HIGH.ordinal()].getText()));
 			update();

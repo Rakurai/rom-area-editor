@@ -4,6 +4,14 @@
 package com.ageoflegacy.aedit.model;
 
 import com.ageoflegacy.aedit.beans.Armor;
+import com.ageoflegacy.aedit.model.area.Area;
+import com.ageoflegacy.aedit.model.area.MobTrigger;
+import com.ageoflegacy.aedit.model.area.Mobile;
+import com.ageoflegacy.aedit.model.area.MobileProgram;
+import com.ageoflegacy.aedit.model.area.MudExit;
+import com.ageoflegacy.aedit.model.area.MudObject;
+import com.ageoflegacy.aedit.model.area.ObjectAffect;
+import com.ageoflegacy.aedit.model.table.RaceTableEntry;
 import com.ageoflegacy.aedit.ui.view.mobView.MudShopView;
 
 import java.io.File;
@@ -82,23 +90,9 @@ public class RomWriter extends RomIO {
 	}
 
 	void writeHeader() {
-		String low = Integer.toString(theArea.getLowVnum());
-		String high = Integer.toString(theArea.getHighVnum());
-		String flags = Integer.toString(theArea.getFlags());
-
-		NumberFormat nf = new DecimalFormat("000");
-
-		romWrite("#AREADATA\n");
-		romWrite("Name " + theArea.getAreaName() + "~\n");
-		romWrite("Builders " + theArea.getBuilder() + "~\n");
-		romWrite("VNUMs " + low + " " + high + "\n");
-		romWrite("Range " + theArea.getRangeString() + "~\n");
-/*		romWrite("Credits [" + nf.format(theArea.getLowLevel()) + "  " + nf.format(theArea.getHighLevel()) + "] "
-				+ theArea.getBuilder() + " " + theArea.getAreaName() + "~\n");
-*/		if (theArea.getFlags() != 0) {
-			romWrite("Flags " + flags + "\n");
-		}
-		romWrite("End\n\n\n\n");
+		romWrite("#AREA\n");
+		romWrite(theArea.getHeader().toString());
+		romWrite("\n");
 	}
 
 	int DIF(int a, int b) {
@@ -157,7 +151,7 @@ public class RomWriter extends RomIO {
 				romWrite("M " + trigger.toFile() + "~\n");
 			}
 
-			Race myRace = mob.getRace();
+			RaceTableEntry myRace = mob.getRace();
 			int temp;
 
 			temp = DIF(myRace.getActFlags(), mob.getActFlags());
@@ -338,7 +332,9 @@ public class RomWriter extends RomIO {
 			romWrite("#" + Integer.toString(a) + "\n");
 			romWrite(room.getName() + "~\n");
 			romWrite(room.getDescription() + "~\n");
-			romWrite("0 " + Integer.toString(room.getFlags()) + " " + Integer.toString(room.getSector()) + "\n");
+			romWrite(Integer.toString(room.getTeleport()) + " "
+			       + Integer.toString(room.getFlags()) + " "
+				   + Integer.toString(room.getSector()) + "\n");
 
 			/*
 			 * write extra descs

@@ -6,6 +6,10 @@ package com.ageoflegacy.aedit.ui.view.mobView;
 import com.ageoflegacy.aedit.beans.Armor;
 import com.ageoflegacy.aedit.beans.Dice;
 import com.ageoflegacy.aedit.model.*;
+import com.ageoflegacy.aedit.model.area.Area;
+import com.ageoflegacy.aedit.model.area.Mobile;
+import com.ageoflegacy.aedit.model.table.RaceTableEntry;
+import com.ageoflegacy.aedit.model.table.RaceDataTable;
 import com.ageoflegacy.aedit.ui.*;
 import net.miginfocom.swing.MigLayout;
 
@@ -25,7 +29,7 @@ import java.net.URL;
  */
 public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements ActionListener,
 		com.ageoflegacy.aedit.ui.view.mobView.ArmorForm, com.ageoflegacy.aedit.ui.view.mobView.DiceForm {
-	private RaceTable theRaces;
+	private RaceDataTable theRaces;
 	private JTextArea desc;
 	private JScrollPane descHolder;
 	private JTextField fields[];
@@ -67,14 +71,11 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 	ClassLoader loader;
 	URL b1;
 
-	public MobView(Area ar) {
-		super(ar);
+	public MobView(Model m) {
+		super(m);
 
 		loader = ClassLoader.getSystemClassLoader();
 		b1 = loader.getResource("dice.gif");
-
-		theRaces = RaceTable.Instance();
-		theRaces.loadRaceTable("race.txt");
 
 		tabPane = new JTabbedPane();
 		fields = new JTextField[4]; // [vnum], short, short, long, desc.
@@ -107,7 +108,7 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 		fields[3].addFocusListener(new StringFieldFocusListener());
 
 		// Vnum box
-		vnumBox = data.getVnumCombo("mob");
+		vnumBox = model.getArea().getVnumCombo("mob");
 		newMobButton = new JButton("New");
 		deleteMobButton = new JButton("Delete");
 		nextButton = new JButton("Next");
@@ -157,13 +158,13 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 		hitRollPanel.add(hitRollField);
 		hitRollField.addFocusListener(new StringFieldFocusListener());
 
-		damTypeBox = DamTypeTable.getInstance().getDamTypeComboBox();
+		damTypeBox = model.getDamTypeTable().getComboBox();
 		damTypeBox.setBorder(new TitledBorder("DamType"));
 
 		actFlags = new FlagChoice(null, MudConstants.actFlagNames, MudConstants.actFlags, MudConstants.NUM_ACT_FLAGS,
 				new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						Mobile temp = data.getMobile(vnum);
+						Mobile temp = model.getArea().getMobile(vnum);
 						if (temp == null)
 							return;
 
@@ -181,7 +182,7 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 		affectChoice = new FlagChoice(null, MudConstants.affectFlagNames, MudConstants.affectFlags,
 				MudConstants.NUM_AFFECTS, new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						Mobile temp = data.getMobile(vnum);
+						Mobile temp = model.getArea().getMobile(vnum);
 						if (temp == null)
 							return;
 
@@ -193,7 +194,7 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 		irvPanel = new IRVChoice("Immune/Resist/Vulnerable", MudConstants.IRVNames, MudConstants.IRVFlags,
 				MudConstants.NUM_IRV, new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						Mobile temp = data.getMobile(vnum);
+						Mobile temp = model.getArea().getMobile(vnum);
 						if (temp == null)
 							return;
 
@@ -207,7 +208,7 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 		partChoice = new FlagChoice(null, MudConstants.partNames, MudConstants.partFlags, MudConstants.NUM_PARTS,
 				new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						Mobile temp = data.getMobile(vnum);
+						Mobile temp = model.getArea().getMobile(vnum);
 						if (temp == null)
 							return;
 
@@ -219,7 +220,7 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 		formChoice = new FlagChoice(null, MudConstants.formNames, MudConstants.formFlags, MudConstants.NUM_FORMS,
 				new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						Mobile temp = data.getMobile(vnum);
+						Mobile temp = model.getArea().getMobile(vnum);
 						if (temp == null)
 							return;
 
@@ -231,7 +232,7 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 		offenseChoice = new FlagChoice(null, MudConstants.offenseNames, MudConstants.offenseFlags,
 				MudConstants.NUM_OFFENSE, new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						Mobile temp = data.getMobile(vnum);
+						Mobile temp = model.getArea().getMobile(vnum);
 						if (temp == null)
 							return;
 
@@ -274,7 +275,7 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 		startPos = new JComboBox(MudConstants.positionNames);
 		startPos.setBorder(new TitledBorder("Start. Pos."));
 
-		inventoryPanel = new MobInPanel(data, this);
+		inventoryPanel = new MobInPanel(model.getArea(), this);
 
 		/*******************************************************
 		 * Layout.
@@ -371,7 +372,7 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 	}
 
 	public void update() {
-		if (data.getMobCount() == 0) {
+		if (model.getArea().getMobCount() == 0) {
 			// set defaults.
 			groupField.setText("0");
 			levelField.setText("0");
@@ -396,12 +397,12 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 			shopButton.setEnabled(false);
 			setEnabled(false);
 		} else {
-			if (vnum == -1 || vnum < data.getLowVnum() || vnum > data.getHighVnum())
-				vnum = data.getFirstMobVnum();
+			if (vnum == -1 || vnum < model.getArea().getLowVnum() || vnum > model.getArea().getHighVnum())
+				vnum = model.getArea().getFirstMobVnum();
 
 			Mobile temp = (Mobile) vnumBox.getSelectedItem();
 			if (temp == null || temp.getVnum() != vnum)
-				temp = data.getMobile(vnum);
+				temp = model.getArea().getMobile(vnum);
 
 			setEnabled(true);
 			sexBox.setSelectedIndex(temp.getSex());
@@ -440,14 +441,14 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 			else
 				shopButton.setEnabled(false);
 
-			if (data.getMprogCount() > 0)
+			if (model.getArea().getMprogCount() > 0)
 				triggerButton.setEnabled(true);
 			else
 				triggerButton.setEnabled(false);
 
-			equipmentPanel.update(data, temp);
+			equipmentPanel.update(model.getArea(), temp);
 		}
-		vnumBox.setSelectedItem(data.getMobile(vnum));
+		vnumBox.setSelectedItem(model.getArea().getMobile(vnum));
 		inventoryPanel.update(vnum);
 		this.validate();
 		equipmentPanel.validate();
@@ -498,7 +499,7 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 	private void updateIRV() {
 		Mobile temp = (Mobile) vnumBox.getSelectedItem();
 		if (temp == null || temp.getVnum() != vnum)
-			temp = data.getMobile(vnum);
+			temp = model.getArea().getMobile(vnum);
 
 		actFlags.setFlags(temp.getActFlags());
 		affectChoice.setFlags(temp.getAffectedBy());
@@ -513,7 +514,7 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 	private void addListeners() {
 		sexBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Mobile temp = data.getMobile(vnum);
+				Mobile temp = model.getArea().getMobile(vnum);
 				if (temp == null)
 					return;
 
@@ -523,7 +524,7 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 		});
 		alignmentBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Mobile temp = data.getMobile(vnum);
+				Mobile temp = model.getArea().getMobile(vnum);
 				if (temp == null)
 					return;
 
@@ -534,12 +535,12 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 
 		raceBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Mobile temp = data.getMobile(vnum);
+				Mobile temp = model.getArea().getMobile(vnum);
 				if (temp == null)
 					return;
 
 				if (temp.getRace() != raceBox.getSelectedItem()) {
-					temp.setRace((Race) raceBox.getSelectedItem());
+					temp.setRace((RaceTableEntry) raceBox.getSelectedItem());
 				}
 
 				updateIRV();
@@ -548,7 +549,7 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 
 		diceButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Mobile mob = data.getMobile(vnum);
+				Mobile mob = model.getArea().getMobile(vnum);
 				if (mob == null)
 					return;
 				int level = mob.getLevel() <= 1 ? 0 : mob.getLevel() - 1;
@@ -574,7 +575,7 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 
 		shopButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Mobile mob = data.getMobile(vnum);
+				Mobile mob = model.getArea().getMobile(vnum);
 				if (mob == null)
 					return;
 
@@ -586,13 +587,13 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 
 		duplicateButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int newVnum = data.getFreeMobileVnum();
+				int newVnum = model.getArea().getFreeMobileVnum();
 				if (newVnum == -1) {
 					inform("You are out of vnums!");
 					return;
 				}
-				Mobile temp = new Mobile(newVnum, data, vnum);
-				data.insert(temp);
+				Mobile temp = new Mobile(newVnum, model, vnum);
+				model.getArea().insert(temp);
 				vnum = newVnum;
 				update();
 			}
@@ -600,8 +601,8 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 
 		triggerButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				TriggerPanel mp = new TriggerPanel(vnum, data);
-				Mobile mob = data.getMobile(vnum);
+				TriggerPanel mp = new TriggerPanel(vnum, model.getArea());
+				Mobile mob = model.getArea().getMobile(vnum);
 				if (mob == null)
 					return;
 
@@ -614,14 +615,14 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 
 		previousButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (vnum <= data.getFirstMobVnum())
+				if (vnum <= model.getArea().getFirstMobVnum())
 					return;
 
 				int temp = vnum - 1;
-				while (data.getMobile(temp) == null && temp >= data.getFirstMobVnum())
+				while (model.getArea().getMobile(temp) == null && temp >= model.getArea().getFirstMobVnum())
 					temp--;
 
-				if (temp >= data.getFirstMobVnum())
+				if (temp >= model.getArea().getFirstMobVnum())
 					vnum = temp;
 
 				update();
@@ -631,14 +632,14 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 
 		nextButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (vnum >= data.getHighVnum())
+				if (vnum >= model.getArea().getHighVnum())
 					return;
 
 				int temp = vnum + 1;
-				while (data.getMobile(temp) == null && temp <= data.getHighVnum())
+				while (model.getArea().getMobile(temp) == null && temp <= model.getArea().getHighVnum())
 					temp++;
 
-				if (temp <= data.getHighVnum())
+				if (temp <= model.getArea().getHighVnum())
 					vnum = temp;
 
 				update();
@@ -648,14 +649,14 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 		newMobButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// Get the lowest available mob vnum
-				int vnum = data.getFreeMobileVnum();
+				int vnum = model.getArea().getFreeMobileVnum();
 				if (vnum == -1) {
 					inform("You are out of vnums!");
 					return;
 				}
-				Mobile temp = new Mobile(vnum, data);
-				temp.setRace(RaceTable.defaultRace());
-				data.insert(temp);
+				Mobile temp = new Mobile(vnum, model);
+				temp.setRace(model.getRaceDataTable().defaultEntry());
+				model.getArea().insert(temp);
 				update(vnum);
 			}
 		});
@@ -665,7 +666,7 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 				if (!confirm("Please confirm Mob deletion. All resets will be lost."))
 					return;
 
-				data.deleteMobile(vnum);
+				model.getArea().deleteMobile(vnum);
 				vnum = -1;
 				update();
 			}
@@ -673,7 +674,7 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 
 		sizeChoice.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Mobile temp = data.getMobile(vnum);
+				Mobile temp = model.getArea().getMobile(vnum);
 				if (temp == null)
 					return;
 
@@ -682,7 +683,7 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 		});
 		damTypeBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Mobile temp = data.getMobile(vnum);
+				Mobile temp = model.getArea().getMobile(vnum);
 				if (temp == null)
 					return;
 
@@ -702,7 +703,7 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 		});
 		startPos.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Mobile temp = data.getMobile(vnum);
+				Mobile temp = model.getArea().getMobile(vnum);
 				if (temp == null)
 					return;
 
@@ -711,7 +712,7 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 		});
 		defaultPos.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Mobile temp = data.getMobile(vnum);
+				Mobile temp = model.getArea().getMobile(vnum);
 				if (temp == null)
 					return;
 
@@ -767,7 +768,7 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 		JTextField field;
 
 		public DeathCryPanel() {
-			mob = data.getMobile(vnum);
+			mob = model.getArea().getMobile(vnum);
 			dCry = mob.getDeathCry();
 
 			field = new JTextField(40);
@@ -788,7 +789,7 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 		}
 
 		public void focusLost(FocusEvent e) {
-			Mobile mob = data.getMobile(vnum);
+			Mobile mob = model.getArea().getMobile(vnum);
 			if (mob == null)
 				return;
 

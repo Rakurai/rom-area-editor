@@ -1,12 +1,12 @@
-package com.ageoflegacy.aedit.model;
+package com.ageoflegacy.aedit.model.table;
 
-public class Race {
+import com.ageoflegacy.aedit.model.MudConstants;
+
+public class RaceTableEntry extends TableEntry {
 	String name;
 	boolean isPcRace;
-	String movementMsg;
 	int actFlags;
 	int affectedByFlags;
-	int affectedBy2Flags;
 	int offensiveFlags;
 	int immunityFlags;
 	int resistanceFlags;
@@ -14,71 +14,23 @@ public class Race {
 	int formFlags;
 	int partsFlags;
 
-	public Race(String n) {
-		name = n;
-		isPcRace = false;
-		movementMsg = "-walks-";
-		actFlags = 0;
-		affectedByFlags = 0;
-		affectedBy2Flags = 0;
-		offensiveFlags = 0;
-		immunityFlags = 0;
-		resistanceFlags = 0;
-		vulnerableFlags = 0;
-		formFlags = 0;
-		partsFlags = 0;
-	}
+	public RaceTableEntry(String[] values) {
+		super(values);
 
-	public void setPcRace(boolean ispcrace) {
-		isPcRace = ispcrace;
-	}
-
-	public void setMovementMessage(String newMsg) {
-		movementMsg = newMsg;
-	}
-
-	public void setActFlags(int newAct) {
-		actFlags = newAct;
-	}
-
-	public void setAffectedByFlags(int newAct) {
-		affectedByFlags = newAct;
-	}
-
-	public void setAffectedBy2Flags(int newAct) {
-		affectedBy2Flags = newAct;
-	}
-
-	public void setOffensiveFlags(int newAct) {
-		offensiveFlags = newAct;
-	}
-
-	public void setImmunityFlags(int newAct) {
-		immunityFlags = newAct;
-	}
-
-	public void setResistanceFlags(int newAct) {
-		resistanceFlags = newAct;
-	}
-
-	public void setVulnerableFlags(int newAct) {
-		vulnerableFlags = newAct;
-	}
-
-	public void setFormFlags(int newAct) {
-		formFlags = newAct;
-	}
-
-	public void setPartsFlags(int newAct) {
-		partsFlags = newAct;
+		name = values[0];
+		isPcRace = Integer.parseInt(values[1]) != 0;
+		actFlags = MudConstants.getBitInt(values[2]);
+		affectedByFlags = MudConstants.getBitInt(values[3]);
+		offensiveFlags = MudConstants.getBitInt(values[4]);
+		immunityFlags = MudConstants.getBitInt(values[5]);
+		resistanceFlags = MudConstants.getBitInt(values[6]);
+		vulnerableFlags = MudConstants.getBitInt(values[7]);
+		formFlags = MudConstants.getBitInt(values[8]);
+		partsFlags = MudConstants.getBitInt(values[9]);
 	}
 
 	public boolean isPcRace() {
 		return isPcRace;
-	}
-
-	public String getMovementMessage() {
-		return movementMsg;
 	}
 
 	public int getActFlags() {
@@ -87,10 +39,6 @@ public class Race {
 
 	public int getAffectedByFlags() {
 		return affectedByFlags;
-	}
-
-	public int getAffectedBy2Flags() {
-		return affectedBy2Flags;
 	}
 
 	public int getOffensiveFlags() {
@@ -133,10 +81,8 @@ public class Race {
 			System.out.println("Yes");
 		else
 			System.out.println("No");
-		System.out.println("Movement Message: " + getMovementMessage());
 		System.out.println("Act Flags       : " + Integer.toString(getActFlags()));
 		System.out.println("Affected Flags  : " + Integer.toString(getAffectedByFlags()));
-		System.out.println("Affected2 Flags : " + Integer.toString(getAffectedBy2Flags()));
 		System.out.println("Offensive Flags : " + Integer.toString(getOffensiveFlags()));
 		System.out.println("Immunity Flags  : " + Integer.toString(getImmunityFlags()));
 		System.out.println("Resistance Flags: " + Integer.toString(getResistanceFlags()));

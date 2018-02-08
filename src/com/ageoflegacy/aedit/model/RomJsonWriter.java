@@ -4,6 +4,13 @@
 package com.ageoflegacy.aedit.model;
 
 import com.ageoflegacy.aedit.beans.Armor;
+import com.ageoflegacy.aedit.model.area.Area;
+import com.ageoflegacy.aedit.model.area.MobTrigger;
+import com.ageoflegacy.aedit.model.area.Mobile;
+import com.ageoflegacy.aedit.model.area.MobileProgram;
+import com.ageoflegacy.aedit.model.area.MudExit;
+import com.ageoflegacy.aedit.model.area.MudObject;
+import com.ageoflegacy.aedit.model.area.ObjectAffect;
 import com.ageoflegacy.aedit.ui.view.mobView.MudShopView;
 
 import javax.json.*;
@@ -325,6 +332,7 @@ public class RomJsonWriter extends RomIO {
 		builder.add("vnum", vnum);
 		builder.add("name", room.getName());
 		builder.add("description", room.getDescription());
+		builder.add("teleport", Integer.toString(room.getTeleport()));
 		builder.add("flags", Integer.toString(room.getFlags()));
 		builder.add("sector", Integer.toString(room.getSector()));
 

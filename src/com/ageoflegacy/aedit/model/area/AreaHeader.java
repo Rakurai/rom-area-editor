@@ -7,13 +7,14 @@
  * 12/19/15
  * This is an AreaHeader bean.
  */
-package com.ageoflegacy.aedit.model;
+package com.ageoflegacy.aedit.model.area;
 
 public class AreaHeader {
 
 	private String fileName;
 	private String pathName;
 	private String areaName;
+	private String areaTitle;
 	private String builder;
 	private String rangeString;
 	private int lowVnum;
@@ -34,8 +35,21 @@ public class AreaHeader {
 		flags = 0;
 	}
 
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(fileName + "~\n");
+		sb.append(areaName + "~\n");
+		sb.append(rangeString + " " + builder + " " + areaTitle + "~\n");
+		sb.append(lowVnum + " " + highVnum + "\n");
+		return sb.toString();
+	}
+
 	public String getAreaName() {
 		return areaName;
+	}
+
+	public String getAreaTitle() {
+		return areaTitle;
 	}
 
 	public String getBuilder() {
@@ -73,7 +87,7 @@ public class AreaHeader {
 	public void setAreaName(String newname) {
 		areaName = newname;
 	}
-
+	
 	public void setFileName(String newname) {
 		fileName = newname;
 	}
@@ -98,5 +112,9 @@ public class AreaHeader {
 
 	public void setRangeString(String str) {
 		rangeString = str;
+	}
+
+	public void setAreaTitle(String string) {
+		areaTitle = string;
 	}
 }

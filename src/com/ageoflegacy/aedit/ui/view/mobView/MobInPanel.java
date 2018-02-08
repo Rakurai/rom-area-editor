@@ -2,9 +2,10 @@ package com.ageoflegacy.aedit.ui.view.mobView;
 
 import com.ageoflegacy.aedit.model.MudConstants;
 import com.ageoflegacy.aedit.ui.view.EditorView;
-import com.ageoflegacy.aedit.model.Area;
-import com.ageoflegacy.aedit.model.Mobile;
-import com.ageoflegacy.aedit.model.MudObject;
+import com.ageoflegacy.aedit.model.area.Area;
+import com.ageoflegacy.aedit.model.area.Mobile;
+import com.ageoflegacy.aedit.model.area.MudObject;
+
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;

@@ -4,17 +4,20 @@
 //
 // This is a class to hold a mobile's data. It restricts the setting
 // of unallowed values.
-package com.ageoflegacy.aedit.model;
+package com.ageoflegacy.aedit.model.area;
 
 import com.ageoflegacy.aedit.beans.Armor;
 import com.ageoflegacy.aedit.beans.Dice;
+import com.ageoflegacy.aedit.model.table.RaceTableEntry;
+import com.ageoflegacy.aedit.model.Model;
+import com.ageoflegacy.aedit.model.table.RaceDataTable;
 import com.ageoflegacy.aedit.ui.view.mobView.MudShopView;
 
 import java.util.Collection;
 import java.util.Vector;
 
 public class Mobile extends MudThing {
-	protected Race race;
+	protected RaceTableEntry race;
 	protected String deathCry;
 	protected int actFlags;
 	protected int group;
@@ -40,9 +43,9 @@ public class Mobile extends MudThing {
 	protected Collection<MudObject> inventory;
 	protected Collection<MobTrigger> triggers;
 
-	public Mobile(int vnum, Area ar) {
+	public Mobile(int vnum, Model model) {
 		super(vnum);
-		myarea = ar;
+		myarea = model.getArea();
 		hitDice = new Dice(1, 1, 1);
 		manaDice = new Dice(1, 1, 1);
 		damageDice = new Dice(1, 1, 1);
@@ -68,16 +71,16 @@ public class Mobile extends MudThing {
 		for (int a = 0; a < 21; a++)
 			equipment[a] = -1;
 		maxInArea = 0;
-		race = RaceTable.defaultRace();
+		race = model.getRaceDataTable().defaultEntry();
 		myShop = null;
 	}
 
-	public Mobile(int vnum, Area ar, int copyFrom) {
-		this(vnum, ar);
+	public Mobile(int vnum, Model model, int copyFrom) {
+		this(vnum, model);
 
 		// alright, now, get the mobile to copy from and
 		// copy the information here...
-		Mobile temp = ar.getMobile(copyFrom);
+		Mobile temp = model.getArea().getMobile(copyFrom);
 		if (temp == null)
 			return;
 
@@ -163,7 +166,7 @@ public class Mobile extends MudThing {
 		return mySpec;
 	}
 
-	public Race getRace() {
+	public RaceTableEntry getRace() {
 		return race;
 	}
 
@@ -247,7 +250,7 @@ public class Mobile extends MudThing {
 		mySpec = spec;
 	}
 
-	public void setRace(Race newRace) {
+	public void setRace(RaceTableEntry newRace) {
 		if (race == newRace)
 			return;
 

@@ -1,10 +1,9 @@
 // George Frick
 // MudObject.java
 // Area Editor Project, Spring 2002
-package com.ageoflegacy.aedit.model;
+package com.ageoflegacy.aedit.model.area;
 
 import com.ageoflegacy.aedit.model.MudConstants;
-import com.ageoflegacy.aedit.model.ObjectAffect;
 
 import javax.swing.*;
 import java.util.Vector;
@@ -14,6 +13,7 @@ public class MudObject extends MudThing {
 
 	private int condition; //
 	private int cost; //
+	private int settings; // gem settings
 	private String removeMessage; //
 	private String wearMessage; //
 	private int casts; //
@@ -32,6 +32,7 @@ public class MudObject extends MudThing {
 		myarea = ar;
 		condition = 100;
 		cost = 1;
+		settings = 0;
 		weight = 1;
 		type = MudConstants.ITEM_TRASH;
 		extraFlags = 0;
@@ -210,6 +211,10 @@ public class MudObject extends MudThing {
 		if (newCost >= 0)
 			cost = newCost;
 
+	}
+
+	public void setNumSettings(int s) {
+		settings = s;
 	}
 
 	/*

@@ -1,18 +1,20 @@
 package com.ageoflegacy.aedit.ui.view;
 
-import com.ageoflegacy.aedit.model.Area;
-
 import javax.swing.*;
+
+import com.ageoflegacy.aedit.model.Model;
+import com.ageoflegacy.aedit.model.area.Area;
+
 import java.awt.*;
 
 public abstract class EditorView extends JComponent {
 	protected GridBagConstraints constraint;
 	protected GridBagLayout layout;
-	protected Area data;
+	protected Model model;
 	protected int vnum; // current item being viewed
 
-	public EditorView(Area d) {
-		data = d;
+	public EditorView(Model model) {
+		this.model = model;
 		vnum = -1;
 		layout = new GridBagLayout();
 		constraint = new GridBagConstraints();

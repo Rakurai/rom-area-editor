@@ -52,6 +52,7 @@
                 
                 <fileset file="lib/javax.json-api-1.0.jar"/>
                 <fileset file="lib/javax.json-1.0.4.jar"/>
+            	<fileset file="lib/opencsv-2.3.jar"/>
             </lib>
             <fileset dir="${data}"/>
             <fileset dir="${image}"/>
