@@ -6,8 +6,13 @@
  * user guide available at https://docs.gradle.org/4.3/userguide/java_library_plugin.html
  */
 
+plugins {
+    id "com.github.onslip.gradle-one-jar" version "1.0.5"
+}
+
 // Apply the java-library plugin to add support for Java Library
 apply plugin: 'java-library'
+//apply plugin: 'gradle-one-jar'
 
 // In this section you declare where to find the dependencies of your project
 repositories {
@@ -28,8 +33,9 @@ dependencies {
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
-
-    compile fileTree(dir: 'image', include: ['*'])
-    compile fileTree(dir: 'data', include: ['*'])
 }
 
+task makejar(type: OneJar) {
+    mainClass = 'com.ageoflegacy.aedit.AreaEditor'
+    archiveName = 'aedit.jar'
+}

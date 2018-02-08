@@ -3,6 +3,7 @@ prefs.txt
 *.class
 .classpath
 .project
+.settings
 
 # Package Files #
 *.jar

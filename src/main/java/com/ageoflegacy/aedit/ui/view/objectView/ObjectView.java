@@ -6,6 +6,7 @@ package com.ageoflegacy.aedit.ui.view.objectView;
 
 import com.ageoflegacy.aedit.beans.Armor;
 import com.ageoflegacy.aedit.beans.Dice;
+import com.ageoflegacy.aedit.io.ResourceLoader;
 import com.ageoflegacy.aedit.model.*;
 import com.ageoflegacy.aedit.model.area.Area;
 import com.ageoflegacy.aedit.model.area.MudObject;
@@ -53,13 +54,10 @@ public class ObjectView extends com.ageoflegacy.aedit.ui.view.EditorView impleme
 	protected JAffectPanel affPanel;
 	protected JPanel mainPanel;
 	protected ObjInPanel inventoryPanel;
-	ClassLoader loader;
-	URL b1;
 
 	public ObjectView(Model m) {
 		super(m);
-		loader = ClassLoader.getSystemClassLoader();
-		b1 = loader.getResource("dice.gif");
+		URL b1 = ResourceLoader.getURL("image/dice.gif");
 
 		vnumBox = model.getArea().getVnumCombo("obj");
 		newObjectButton = new JButton("New");
@@ -124,7 +122,7 @@ public class ObjectView extends com.ageoflegacy.aedit.ui.view.EditorView impleme
 		extraFlags = new FlagChoice("Extra Flags", MudConstants.extraNames, MudConstants.extraFlags,
 				MudConstants.NUM_EXTRA, this, 3);
 
-		typePanel = new ObjectTypePanel(model, model.getDamTypeTable(), this);
+		typePanel = new ObjectTypePanel(model, this);
 		affPanel = new JAffectPanel();
 
 		inventoryPanel = new ObjInPanel();

@@ -9,6 +9,7 @@
 package com.ageoflegacy.aedit.ui.view.roomView;
 
 import com.ageoflegacy.aedit.ui.SpringUtilities;
+import com.ageoflegacy.aedit.io.ResourceLoader;
 import com.ageoflegacy.aedit.model.Room;
 import com.ageoflegacy.aedit.model.area.Area;
 import com.ageoflegacy.aedit.model.area.MudExit;
@@ -22,7 +23,6 @@ import java.awt.event.ActionListener;
 import java.net.URL;
 
 public class ExitPanel extends JPanel {
-	private ClassLoader loader;
 	private URL[] dirUrls;
 	JButton[] directions;
 	JComboBox[] targets;
@@ -40,7 +40,6 @@ public class ExitPanel extends JPanel {
 		super(true);
 		vnum = -1;
 		dirUrls = new URL[6];
-		loader = ClassLoader.getSystemClassLoader();
 		parent = roomView;
 		lowVnum = area.getLowVnum();
 		highVnum = area.getHighVnum();
@@ -55,7 +54,7 @@ public class ExitPanel extends JPanel {
 		setLayout(new SpringLayout());
 
 		for (int a = MudExit.DIR_NORTH; a < MudExit.MAX_EXITS; a++) {
-			dirUrls[a] = loader.getResource(icons[a]);
+			dirUrls[a] = ResourceLoader.getURL("image/" + icons[a]);
 			ImageIcon tIcon = new ImageIcon(dirUrls[a]);
 			directions[a] = new JButton(tIcon);
 			directions[a].setMargin(new Insets(0, 0, 0, 0));
@@ -251,15 +250,15 @@ public class ExitPanel extends JPanel {
 		private JComboBox target;
 
 		public exitButton(ExitPanel e, int d, JComboBox t) {
-			super(new ImageIcon(loader.getResource("noexit.gif")));
+			super(new ImageIcon(ResourceLoader.getURL("image/noexit.gif")));
 			parent = e;
 			direction = d;
 			target = t;
 			setMargin(new Insets(0, 0, 0, 0));
 			images = new ImageIcon[3];
-			images[NOEXIT] = new ImageIcon(loader.getResource(icons[NOEXIT]));
-			images[LINKS] = new ImageIcon(loader.getResource(icons[LINKS]));
-			images[GOES] = new ImageIcon(loader.getResource(icons[GOES]));
+			images[NOEXIT] = new ImageIcon(ResourceLoader.getURL("image/" + icons[NOEXIT]));
+			images[LINKS] = new ImageIcon(ResourceLoader.getURL("image/" + icons[LINKS]));
+			images[GOES] = new ImageIcon(ResourceLoader.getURL("image/" + icons[GOES]));
 			setState(NOEXIT);
 			this.addActionListener(new exitLinkListener());
 		}

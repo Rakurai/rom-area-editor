@@ -1,13 +1,10 @@
-/*
- * George Frick, Area Editor project, December 2002.
- */
 package com.ageoflegacy.aedit.model.table;
 
 import java.io.IOException;
 
-public class DamTypeTable extends TypeTable {
+public class WeaponTypeTable extends TypeTable {
 
-	public DamTypeTable(String filename) throws IOException {
+	public WeaponTypeTable(String filename) throws IOException {
 		super(filename);
 	}
 

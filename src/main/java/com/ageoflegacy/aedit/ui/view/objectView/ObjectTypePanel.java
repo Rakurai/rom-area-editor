@@ -6,6 +6,10 @@ import com.ageoflegacy.aedit.model.*;
 import com.ageoflegacy.aedit.model.area.Area;
 import com.ageoflegacy.aedit.model.area.MudObject;
 import com.ageoflegacy.aedit.model.table.DamTypeTable;
+import com.ageoflegacy.aedit.model.table.LiquidTypeTable;
+import com.ageoflegacy.aedit.model.table.SpellTypeTable;
+import com.ageoflegacy.aedit.model.table.TypeTable;
+import com.ageoflegacy.aedit.model.table.WeaponTypeTable;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -32,23 +36,21 @@ public class ObjectTypePanel extends JPanel {
 	private final static int ONALL = ON0 | ON1 | ON2 | ON3 | ON4;
 	private final Model model;
 	private int vnum;
-	DamTypeTable theDamTypes;
-	WeaponTypeTable theWeaponTypes;
-	LiquidTypeTable theLiquidTypes;
-	SpellListTable theSpellList;
+	TypeTable theDamTypes;
+	TypeTable theWeaponTypes;
+	TypeTable theLiquidTypes;
+	TypeTable theSpellList;
 	com.ageoflegacy.aedit.ui.view.objectView.ObjectView myParent;
 
-	public ObjectTypePanel(Model m, DamTypeTable _theDamTypes, ObjectView par) {
+	public ObjectTypePanel(Model m, ObjectView par) {
 		this.model = m;
 		myParent = par;
+		
 		vnum = -1;
-		theDamTypes = _theDamTypes;
-		theWeaponTypes = new WeaponTypeTable();
-		theWeaponTypes.loadWeaponTypeTable("wtype.txt");
-		theLiquidTypes = new LiquidTypeTable();
-		theLiquidTypes.loadLiquidTypeTable("liquid.txt");
-		theSpellList = new SpellListTable();
-		theSpellList.loadSpellListTable("spell.txt");
+		theDamTypes = model.getDamTypeTable();
+		theWeaponTypes = model.getWeaponTypeTable();
+		theLiquidTypes = model.getLiquidTypeTable();
+		theSpellList = model.getSpellTypeTable();
 		typeBox = new JComboBox(MudConstants.typeNames);
 		typeBox.setBorder(new TitledBorder("Item Type"));
 		v0 = new JTextField(10);
@@ -181,8 +183,8 @@ public class ObjectTypePanel extends JPanel {
 
 			// TODO: make sure v0 is valid weapon class.
 			String st = temp.getsValue(0);
-			if (!theWeaponTypes.isWeaponType(st))
-				temp.setsValue(0, theWeaponTypes.getDefaultType());
+			if (!theWeaponTypes.isType(st))
+				temp.setsValue(0, theWeaponTypes.defaultEntry().getName());
 			v0.setText(temp.getsValue(0));
 			v1.setText(Integer.toString(temp.getiValue(1, 1)));
 			v2.setText(Integer.toString(temp.getiValue(2, 1)));
@@ -257,8 +259,8 @@ public class ObjectTypePanel extends JPanel {
 			v0.setText(Integer.toString(temp.getiValue(0, 1)));
 			v1.setText(Integer.toString(temp.getiValue(1, 1)));
 			String st = temp.getsValue(2);
-			if (!theLiquidTypes.isLiquidType(st))
-				temp.setsValue(2, theLiquidTypes.getDefaultLiquid());
+			if (!theLiquidTypes.isType(st))
+				temp.setsValue(2, theLiquidTypes.defaultEntry().getName());
 			v2.setText(temp.getsValue(2));
 			if (temp.getiValue(3) == 0)
 				v3.setText("No");
@@ -305,7 +307,7 @@ public class ObjectTypePanel extends JPanel {
 			String st = temp.getsValue(1);
 			for (int spc = 1; spc < 5; spc++) {
 				st = temp.getsValue(spc);
-				if (!theSpellList.isSpell(st))
+				if (!theSpellList.isType(st))
 					temp.setsValue(spc, "");
 			}
 
@@ -396,11 +398,11 @@ public class ObjectTypePanel extends JPanel {
 	}
 
 	class v0FocusListener implements FocusListener {
-		protected WeaponTypeTable theWeaponTypes;
+		protected TypeTable theWeaponTypes;
 
-		public v0FocusListener(WeaponTypeTable wTable) {
+		public v0FocusListener(TypeTable theWeaponTypes2) {
 			super();
-			theWeaponTypes = wTable;
+			theWeaponTypes = theWeaponTypes2;
 		}
 
 		public void focusGained(FocusEvent e) {
@@ -409,7 +411,7 @@ public class ObjectTypePanel extends JPanel {
 
 			if (which == MudConstants.ITEM_WEAPON) {
 				MudObject temp = (MudObject) model.getArea().getObject(vnum);
-				JComboBox options = theWeaponTypes.getWeaponTypeComboBox();
+				JComboBox options = theWeaponTypes.getComboBox();
 				options.setSelectedItem(temp.getsValue(0));
 
 				int dec = JOptionPane.showConfirmDialog(null, options, "Choose weapon type:",
@@ -484,7 +486,7 @@ public class ObjectTypePanel extends JPanel {
 			} else if (which == MudConstants.ITEM_SCROLL || which == MudConstants.ITEM_POTION
 					|| which == MudConstants.ITEM_PILL) {
 				MudObject temp = (MudObject) model.getArea().getObject(vnum);
-				JComboBox options = theSpellList.getSpellListComboBox();
+				JComboBox options = theSpellList.getComboBox();
 				options.setSelectedItem(temp.getsValue(1));
 
 				int dec = JOptionPane.showConfirmDialog(null, options, "Choose spell:", JOptionPane.OK_CANCEL_OPTION);
@@ -591,7 +593,7 @@ public class ObjectTypePanel extends JPanel {
 			} else if (which == MudConstants.ITEM_SCROLL || which == MudConstants.ITEM_POTION
 					|| which == MudConstants.ITEM_PILL) {
 				MudObject temp = (MudObject) model.getArea().getObject(vnum);
-				JComboBox options = theSpellList.getSpellListComboBox();
+				JComboBox options = theSpellList.getComboBox();
 				options.setSelectedItem(temp.getsValue(2));
 
 				int dec = JOptionPane.showConfirmDialog(null, options, "Choose spell:", JOptionPane.OK_CANCEL_OPTION);
@@ -638,7 +640,7 @@ public class ObjectTypePanel extends JPanel {
 				update();
 			} else if (which == MudConstants.ITEM_DRINK_CON || which == MudConstants.ITEM_FOUNTAIN) {
 				MudObject temp = (MudObject) model.getArea().getObject(vnum);
-				JComboBox options = theLiquidTypes.getLiquidTypeComboBox();
+				JComboBox options = theLiquidTypes.getComboBox();
 				options.setSelectedItem(temp.getsValue(2));
 
 				int dec = JOptionPane.showConfirmDialog(null, options, "Choose liquid:", JOptionPane.OK_CANCEL_OPTION);
@@ -691,12 +693,12 @@ public class ObjectTypePanel extends JPanel {
 	}
 
 	class v3FocusListener implements FocusListener {
-		protected DamTypeTable theDamTypes;
+		protected TypeTable theDamTypes;
 		protected Area data;
 
-		public v3FocusListener(DamTypeTable dTable, Area a) {
+		public v3FocusListener(TypeTable theDamTypes2, Area a) {
 			super();
-			theDamTypes = dTable;
+			theDamTypes = theDamTypes2;
 			data = a;
 		}
 
@@ -721,7 +723,7 @@ public class ObjectTypePanel extends JPanel {
 					|| which == MudConstants.ITEM_PILL || which == MudConstants.ITEM_WAND
 					|| which == MudConstants.ITEM_STAFF) {
 				MudObject temp = (MudObject) model.getArea().getObject(vnum);
-				JComboBox options = theSpellList.getSpellListComboBox();
+				JComboBox options = theSpellList.getComboBox();
 				options.setSelectedItem(temp.getsValue(3));
 
 				int dec = JOptionPane.showConfirmDialog(null, options, "Choose spell:", JOptionPane.OK_CANCEL_OPTION);
@@ -837,7 +839,7 @@ public class ObjectTypePanel extends JPanel {
 			} else if (which == MudConstants.ITEM_SCROLL || which == MudConstants.ITEM_POTION
 					|| which == MudConstants.ITEM_PILL) {
 				MudObject temp = (MudObject) model.getArea().getObject(vnum);
-				JComboBox options = theSpellList.getSpellListComboBox();
+				JComboBox options = theSpellList.getComboBox();
 				options.setSelectedItem(temp.getsValue(4));
 
 				int dec = JOptionPane.showConfirmDialog(null, options, "Choose spell:", JOptionPane.OK_CANCEL_OPTION);

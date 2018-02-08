@@ -6,18 +6,30 @@ import java.io.IOException;
 
 import com.ageoflegacy.aedit.model.area.Area;
 import com.ageoflegacy.aedit.model.table.DamTypeTable;
+import com.ageoflegacy.aedit.model.table.LiquidTypeTable;
 import com.ageoflegacy.aedit.model.table.RaceDataTable;
+import com.ageoflegacy.aedit.model.table.SpellTypeTable;
+import com.ageoflegacy.aedit.model.table.TypeTable;
+import com.ageoflegacy.aedit.model.table.WeaponTypeTable;
 
 public class Model {
 	private Area area;
-	private DamTypeTable damTypeTable;
+	private TypeTable damTypeTable;
+	private TypeTable weaponTypeTable;
+	private TypeTable liquidTypeTable;
+	private TypeTable spellTypeTable;
+
 	private RaceDataTable raceDataTable;
-	
+
 	public Model() throws IOException {
 		area = new Area();
 
-		damTypeTable = new DamTypeTable("damtype.txt");
-		raceDataTable = new RaceDataTable("race_table.csv");
+		raceDataTable = new RaceDataTable("data/race_table.csv");
+
+		damTypeTable = new DamTypeTable("data/damtype.txt");
+		weaponTypeTable = new WeaponTypeTable("data/wtype.txt");
+		liquidTypeTable = new LiquidTypeTable("data/liquid.txt");
+		spellTypeTable = new SpellTypeTable("data/spell.txt");
 	}
 	
 	public Area getArea() {
@@ -37,10 +49,22 @@ public class Model {
 		area.transformResets();
 	}
 
-	public DamTypeTable getDamTypeTable() {
+	public TypeTable getDamTypeTable() {
 		return damTypeTable;
 	}
+	
+	public TypeTable getWeaponTypeTable() {
+		return weaponTypeTable;
+	}
 
+	public TypeTable getLiquidTypeTable() {
+		return liquidTypeTable;
+	}
+
+	public TypeTable getSpellTypeTable() {
+		return spellTypeTable;
+	}
+	
 	public RaceDataTable getRaceDataTable() {
 		return raceDataTable;
 	}

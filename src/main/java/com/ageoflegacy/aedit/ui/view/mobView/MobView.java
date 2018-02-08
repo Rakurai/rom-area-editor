@@ -5,6 +5,7 @@ package com.ageoflegacy.aedit.ui.view.mobView;
 
 import com.ageoflegacy.aedit.beans.Armor;
 import com.ageoflegacy.aedit.beans.Dice;
+import com.ageoflegacy.aedit.io.ResourceLoader;
 import com.ageoflegacy.aedit.model.*;
 import com.ageoflegacy.aedit.model.area.Area;
 import com.ageoflegacy.aedit.model.area.Mobile;
@@ -67,14 +68,11 @@ public class MobView extends com.ageoflegacy.aedit.ui.view.EditorView implements
 	private JPanel mainPanel;
 	private MobileEquipmentPanel equipmentPanel;
 	private MobInPanel inventoryPanel;
-	ClassLoader loader;
-	URL b1;
 
 	public MobView(Model m) {
 		super(m);
 
-		loader = ClassLoader.getSystemClassLoader();
-		b1 = loader.getResource("dice.gif");
+		URL b1 = ResourceLoader.getURL("image/dice.gif");
 
 		tabPane = new JTabbedPane();
 		fields = new JTextField[4]; // [vnum], short, short, long, desc.

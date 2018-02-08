@@ -39,6 +39,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import com.ageoflegacy.aedit.io.FileParser;
+import com.ageoflegacy.aedit.io.ResourceLoader;
 import com.ageoflegacy.aedit.model.Model;
 import com.ageoflegacy.aedit.model.RomJsonWriter;
 import com.ageoflegacy.aedit.model.RomWriter;
@@ -91,11 +92,9 @@ public class AreaEditorFrame extends JFrame {
 		this.model = model;
 		recentFiles = new HashMap<String, JMenuItem>();
 
-		ClassLoader loader = ClassLoader.getSystemClassLoader();
-		
-		ImageIcon jMenuItemBullet = new ImageIcon(loader.getResource("bullet2.gif"));
-		ImageIcon jMenuBullet = new ImageIcon(loader.getResource("bullet.gif"));
-		ImageIcon jMenuAboutBullet = new ImageIcon(loader.getResource("bullet3.gif"));
+		ImageIcon jMenuItemBullet = new ImageIcon(ResourceLoader.getURL("image/bullet2.gif"));
+		ImageIcon jMenuBullet = new ImageIcon(ResourceLoader.getURL("image/bullet.gif"));
+		ImageIcon jMenuAboutBullet = new ImageIcon(ResourceLoader.getURL("image/bullet3.gif"));
 		setJMenuBar(createFileMenu(jMenuBullet, jMenuItemBullet, jMenuAboutBullet));
 
 		myOverView = new com.ageoflegacy.aedit.ui.view.overView.OverView(model);
@@ -253,8 +252,7 @@ public class AreaEditorFrame extends JFrame {
 		public aboutListener(JFrame p) {
 			super();
 			myparent = p;
-			ClassLoader loader = ClassLoader.getSystemClassLoader();
-			megadance = new ImageIcon(loader.getResource("megadance.gif"));
+			megadance = new ImageIcon(ResourceLoader.getURL("image/megadance.gif"));
 			aboutPanel = new JPanel();
 			JLabel msg = new JLabel(
 					"<HTML><BODY><BOLD><HR>Thank you for using the MAFIA model editor!</BOLD><BR> This editor was designed and created by <A HREF=mailto:'tenchi@s5games.net'>George Frick</A><P>GUI design by George Frick and Scott Emerson of <A HREF='http://www.s5games.net'>CaffeineGamez</A></P><HR></BODY></HTML><HTML><BODY><BOLD>Special thanks to all beta testers and players of Animud.</BOLD></BODY></HTML>");

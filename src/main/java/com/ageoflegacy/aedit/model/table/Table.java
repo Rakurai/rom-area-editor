@@ -5,9 +5,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+
+import com.ageoflegacy.aedit.io.ResourceLoader;
 import com.opencsv.CSVReader;
 
 public abstract class Table {
@@ -22,7 +26,9 @@ public abstract class Table {
 	}
 	
 	private void load(String filename) throws IOException {
-		InputStream is = ClassLoader.getSystemResourceAsStream(filename);
+//		System.out.println("loading " + filename);
+//		System.out.println(this.getClass().getClassLoader().getResource(filename));
+		InputStream is = ResourceLoader.getInputStream(filename);
 		CSVReader reader = new CSVReader(new InputStreamReader(is));
 
 		try {

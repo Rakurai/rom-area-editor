@@ -12,6 +12,7 @@ import com.ageoflegacy.aedit.model.MudConstants;
 import com.ageoflegacy.aedit.model.area.Area;
 import com.ageoflegacy.aedit.model.area.MudExit;
 import com.ageoflegacy.aedit.model.area.MudObject;
+import com.ageoflegacy.aedit.io.ResourceLoader;
 import com.ageoflegacy.aedit.model.*;
 import com.ageoflegacy.aedit.ui.*;
 import net.miginfocom.swing.MigLayout;
@@ -45,7 +46,6 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 
 	public RoomView(Model m) {
 		super(m);
-		ClassLoader loader = ClassLoader.getSystemClassLoader();
 		Dimension mapHolderDimension = new Dimension(500, 600);
 
 		containerButton = createResetButton();
@@ -102,7 +102,7 @@ public class RoomView extends com.ageoflegacy.aedit.ui.view.EditorView implement
 		z2.addActionListener(zListen);
 		bGroup.add(z1);
 		bGroup.add(z2);
-		zPanel.add(new JLabel(new ImageIcon(loader.getResource("magnify.gif"))));
+		zPanel.add(new JLabel(new ImageIcon(ResourceLoader.getURL("image/magnify.gif"))));
 		zPanel.add(z1);
 		zPanel.add(z2);
 		zPanel.add(keyDig);

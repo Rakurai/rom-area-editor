@@ -23,6 +23,11 @@ public abstract class TypeTable extends Table {
 		return ((TypeTableEntry)entries.get(index)).getName();
 	}
 
+	@Override
+	protected TableEntry getTableEntry(String[] values) {
+		return new TypeTableEntry(values);
+	}
+
 	public JComboBox getComboBox() {
 		return new JComboBox(super.getNameList());
 	}

@@ -1,6 +1,6 @@
 package com.ageoflegacy.aedit.model.table;
 
-public abstract class TypeTableEntry extends TableEntry {
+public class TypeTableEntry extends TableEntry {
 
 	private final String name;
 
