@@ -10,3 +10,5 @@ prefs.txt
 *.ear
 /bin/
 /build/
+/target/
+/.gradle/
